@@ -97,15 +97,63 @@ eval("var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!\n * jQ
 
 /***/ }),
 
+/***/ "./src/SliderController.ts":
+/*!*********************************!*\
+  !*** ./src/SliderController.ts ***!
+  \*********************************/
+/*! exports provided: SliderController */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"SliderController\", function() { return SliderController; });\n/* harmony import */ var _SliderModel__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./SliderModel */ \"./src/SliderModel.ts\");\n/* harmony import */ var _SliderView__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./SliderView */ \"./src/SliderView.ts\");\n\n\nvar SliderController = /** @class */ (function () {\n    function SliderController(node, options) {\n        this.view = new _SliderView__WEBPACK_IMPORTED_MODULE_1__[\"SliderView\"](options);\n        this.model = new _SliderModel__WEBPACK_IMPORTED_MODULE_0__[\"SliderModel\"](options);\n    }\n    return SliderController;\n}());\n\n\n\n//# sourceURL=webpack:///./src/SliderController.ts?");
+
+/***/ }),
+
+/***/ "./src/SliderModel.ts":
+/*!****************************!*\
+  !*** ./src/SliderModel.ts ***!
+  \****************************/
+/*! exports provided: SliderModel */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"SliderModel\", function() { return SliderModel; });\n/* harmony import */ var _interfaces__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./interfaces */ \"./src/interfaces.ts\");\n\nvar SliderModel = /** @class */ (function () {\n    function SliderModel(_a) {\n        var min = _a.min, max = _a.max, step = _a.step, type = _a.type;\n        this._min = 0;\n        this._max = 10;\n        this._step = 1;\n        this._type = _interfaces__WEBPACK_IMPORTED_MODULE_0__[\"Type\"].Single;\n        this._value = 0;\n        if (min) {\n            this._min = min;\n        }\n        if (max) {\n            this._max = max;\n        }\n        if (step) {\n            this._step = step;\n        }\n        if (type) {\n            this._type = type;\n        }\n        this.value = Math.round((this._max - this._min) / 2);\n    }\n    Object.defineProperty(SliderModel.prototype, \"value\", {\n        get: function () {\n            return this._value;\n        },\n        set: function (v) {\n            this._value = v;\n        },\n        enumerable: true,\n        configurable: true\n    });\n    return SliderModel;\n}());\n\n\n\n//# sourceURL=webpack:///./src/SliderModel.ts?");
+
+/***/ }),
+
+/***/ "./src/SliderView.ts":
+/*!***************************!*\
+  !*** ./src/SliderView.ts ***!
+  \***************************/
+/*! exports provided: SliderView */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"SliderView\", function() { return SliderView; });\n/* harmony import */ var _interfaces__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./interfaces */ \"./src/interfaces.ts\");\n\nvar SliderView = /** @class */ (function () {\n    function SliderView(_a) {\n        var _b = _a.showValue, showValue = _b === void 0 ? false : _b, _c = _a.orientation, orientation = _c === void 0 ? _interfaces__WEBPACK_IMPORTED_MODULE_0__[\"Orientation\"].Horizontal : _c;\n        this.showValue = showValue;\n        this.orientation = orientation;\n    }\n    return SliderView;\n}());\n\n\n\n//# sourceURL=webpack:///./src/SliderView.ts?");
+
+/***/ }),
+
 /***/ "./src/index.ts":
 /*!**********************!*\
   !*** ./src/index.ts ***!
   \**********************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("/* WEBPACK VAR INJECTION */(function(jQuery, $) {\nvar Orientation;\n(function (Orientation) {\n    Orientation[Orientation[\"Vertical\"] = 0] = \"Vertical\";\n    Orientation[Orientation[\"Horizontal\"] = 1] = \"Horizontal\";\n})(Orientation || (Orientation = {}));\nvar Type;\n(function (Type) {\n    Type[Type[\"Single\"] = 0] = \"Single\";\n    Type[Type[\"Range\"] = 1] = \"Range\";\n})(Type || (Type = {}));\nvar SliderModel = /** @class */ (function () {\n    function SliderModel(_a) {\n        var _b = _a.min, min = _b === void 0 ? 0 : _b, _c = _a.max, max = _c === void 0 ? 10 : _c, _d = _a.step, step = _d === void 0 ? 1 : _d;\n        this.min = min;\n        this.max = max;\n        this.step = step;\n    }\n    return SliderModel;\n}());\nvar SliderView = /** @class */ (function () {\n    function SliderView(_a) {\n        var _b = _a.showValue, showValue = _b === void 0 ? false : _b, _c = _a.orientation, orientation = _c === void 0 ? Orientation.Horizontal : _c;\n        this.showValue = showValue;\n        this.orientation = orientation;\n    }\n    return SliderView;\n}());\nvar SliderController = /** @class */ (function () {\n    function SliderController(node, options) {\n        this.view = new SliderView(options);\n        this.model = new SliderModel(options);\n    }\n    return SliderController;\n}());\n(function ($) {\n    $.fn.slider = function (options) {\n        return this.each(function () {\n            if (!$.data(this, \"slider\")) {\n                $.data(this, \"slider\", new SliderController(this, options));\n            }\n        });\n    };\n}(jQuery));\n$('.test').slider({});\n\n/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ \"./node_modules/jquery/dist/jquery.js\"), __webpack_require__(/*! jquery */ \"./node_modules/jquery/dist/jquery.js\")))\n\n//# sourceURL=webpack:///./src/index.ts?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* WEBPACK VAR INJECTION */(function(jQuery, $) {/* harmony import */ var _SliderController__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./SliderController */ \"./src/SliderController.ts\");\n\n(function ($) {\n    $.fn.slider = function (options) {\n        return this.each(function () {\n            if (!$.data(this, \"slider\")) {\n                $.data(this, \"slider\", new _SliderController__WEBPACK_IMPORTED_MODULE_0__[\"SliderController\"](this, options));\n            }\n        });\n    };\n}(jQuery));\n$('.test').slider({});\n\n/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ \"./node_modules/jquery/dist/jquery.js\"), __webpack_require__(/*! jquery */ \"./node_modules/jquery/dist/jquery.js\")))\n\n//# sourceURL=webpack:///./src/index.ts?");
+
+/***/ }),
+
+/***/ "./src/interfaces.ts":
+/*!***************************!*\
+  !*** ./src/interfaces.ts ***!
+  \***************************/
+/*! exports provided: Orientation, Type */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"Orientation\", function() { return Orientation; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"Type\", function() { return Type; });\nvar Orientation;\n(function (Orientation) {\n    Orientation[Orientation[\"Vertical\"] = 0] = \"Vertical\";\n    Orientation[Orientation[\"Horizontal\"] = 1] = \"Horizontal\";\n})(Orientation || (Orientation = {}));\nvar Type;\n(function (Type) {\n    Type[Type[\"Single\"] = 0] = \"Single\";\n    Type[Type[\"Range\"] = 1] = \"Range\";\n})(Type || (Type = {}));\n\n\n//# sourceURL=webpack:///./src/interfaces.ts?");
 
 /***/ })
 
