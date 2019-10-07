@@ -26,6 +26,10 @@ describe('Slider Model tests', ()=>{
         it('init value > max', ()=>{
             chai.to.throw(new SliderModel({min:0, max:9, value: 10}));
         });
+
+        it('diff max and min is at least one step', ()=>{
+            chai.to.throw(new SliderModel({min:0, max:4, step: 5}));
+        });
     });
 
     describe('setValue calculation', ()=>{
