@@ -10760,8 +10760,9 @@ var SliderModel = /** @class */ (function () {
         if (this._max <= this._min) {
             throw "min must be less than max";
         }
-        if ((this._max - this._min) < 0) {
-            throw "diff between max and min must be at least one step";
+        var fraction = (this._max - this._min) % this._step;
+        if (fraction !== 0) {
+            this._max = this._max + fraction;
         }
         if (value && value < this._min) {
             throw "init value must be more or equal min";
@@ -10778,7 +10779,32 @@ var SliderModel = /** @class */ (function () {
             return this._value;
         },
         set: function (v) {
-            this._value = v;
+            if (v > this._max) {
+                this._value = this._max;
+            }
+            else if (v < this._min) {
+                this._value = this._min;
+            }
+            else {
+                var full = (v - this._min) / this._step >> 0;
+                var fraction = v - (full * this._step + this._min);
+                var round = Math.round(fraction / this._step);
+                this._value = this._min + full * this._step + round * this._step;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SliderModel.prototype, "min", {
+        get: function () {
+            return this._min;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SliderModel.prototype, "max", {
+        get: function () {
+            return this._max;
         },
         enumerable: true,
         configurable: true

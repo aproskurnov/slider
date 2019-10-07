@@ -28,8 +28,9 @@ class SliderModel{
         if (this._max <= this._min){
             throw "min must be less than max";
         }
-        if ((this._max - this._min) < 0){
-            throw "diff between max and min must be at least one step"
+        let fraction = (this._max - this._min) % this._step;
+        if (fraction !== 0){
+            this._max = this._max + fraction;
         }
         if (value && value < this._min){
             throw "init value must be more or equal min";
@@ -47,7 +48,23 @@ class SliderModel{
         return this._value;
     }
     public set value(v){
-        this._value = v;
+        if (v > this._max){
+            this._value = this._max;
+        }else if( v < this._min){
+            this._value = this._min;
+        }else{
+            let full = (v-this._min)/this._step>>0;
+            let fraction = v - (full * this._step + this._min);
+            let round = Math.round(fraction/this._step);
+            this._value = this._min + full * this._step + round * this._step;
+        }
+    }
+
+    public get min(){
+        return this._min;
+    }
+    public get max(){
+        return this._max;
     }
 
 }
