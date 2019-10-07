@@ -3,7 +3,7 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 let entry = {
-    app: './src/index.ts',
+    slider: './src/slider.ts',
 };
 let outputPath = path.resolve(__dirname, './dist');
 let devtool = '';
@@ -20,7 +20,7 @@ let plugins = [
 
 if (process.env.TESTBUILD){
     entry = {
-        app: './test/index.spec.js'
+        slider: './test/index.spec.js'
     };
     outputPath = path.resolve(__dirname, './test-dist');
     devtool = "source-map";

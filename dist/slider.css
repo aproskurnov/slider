@@ -1,0 +1,16 @@
+.slider {
+  position: relative;
+  border: 1px solid;
+  margin: 20px 20px; }
+  .slider__handler {
+    position: absolute;
+    width: 20px;
+    height: 18px;
+    top: -3px;
+    background-color: cornflowerblue;
+    cursor: pointer; }
+  .slider_horizontal {
+    height: 10px; }
+  .slider_vertical {
+    width: 20px; }
+

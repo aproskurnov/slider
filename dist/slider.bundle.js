@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./src/index.ts");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./src/slider.ts");
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -10712,8 +10712,8 @@ __webpack_require__.r(__webpack_exports__);
 
 var SliderController = /** @class */ (function () {
     function SliderController(node, options) {
-        this.view = new _SliderView__WEBPACK_IMPORTED_MODULE_1__["SliderView"](options);
         this.model = new _SliderModel__WEBPACK_IMPORTED_MODULE_0__["SliderModel"](options);
+        this.view = new _SliderView__WEBPACK_IMPORTED_MODULE_1__["SliderView"](options, this.model.steps, this.model.position, node);
     }
     return SliderController;
 }());
@@ -10742,6 +10742,7 @@ var SliderModel = /** @class */ (function () {
         this._step = step;
         this._type = type;
         this._value = this._min;
+        this._position = 0;
         if (this._max <= this._min) {
             throw "min must be less than max";
         }
@@ -10749,11 +10750,12 @@ var SliderModel = /** @class */ (function () {
         if (fraction !== 0) {
             this._max = this._max + fraction;
         }
+        this._steps = (this._max - this._min) / this._step;
         if (value) {
             this.value = value;
         }
         else {
-            this.value = Math.round((this._max - this._min) / 2);
+            this.value = Math.round((this._max - this._min) / 2) + this._min;
         }
     }
     Object.defineProperty(SliderModel.prototype, "value", {
@@ -10768,11 +10770,13 @@ var SliderModel = /** @class */ (function () {
                 this._value = this._min;
             }
             else {
-                var full = (v - this._min) / this._step >> 0;
+                var full = (v - this._min) / this._step + this._min >> 0;
                 var fraction = v - (full * this._step + this._min);
                 var round = Math.round(fraction / this._step);
                 this._value = this._min + full * this._step + round * this._step;
             }
+            var stepsCur = (this._value - this._min) / this._step;
+            this._position = 100 / this._steps * stepsCur;
         },
         enumerable: true,
         configurable: true
@@ -10787,6 +10791,23 @@ var SliderModel = /** @class */ (function () {
     Object.defineProperty(SliderModel.prototype, "max", {
         get: function () {
             return this._max;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SliderModel.prototype, "steps", {
+        get: function () {
+            return this._steps;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SliderModel.prototype, "position", {
+        get: function () {
+            return this._position;
+        },
+        set: function (v) {
+            this.value = v / this._steps * this._step;
         },
         enumerable: true,
         configurable: true
@@ -10810,42 +10831,33 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SliderView", function() { return SliderView; });
 /* harmony import */ var _interfaces__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./interfaces */ "./src/interfaces.ts");
 
+
 var SliderView = /** @class */ (function () {
-    function SliderView(_a) {
-        var _b = _a.showValue, showValue = _b === void 0 ? false : _b, _c = _a.orientation, orientation = _c === void 0 ? _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Horizontal : _c;
-        this.showValue = showValue;
-        this.orientation = orientation;
+    function SliderView(_a, steps, position, parentEl) {
+        var _b = _a.showValue, showValue = _b === void 0 ? false : _b, _c = _a.orientation, orientation = _c === void 0 ? _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Horizontal : _c, _d = _a.type, type = _d === void 0 ? _interfaces__WEBPACK_IMPORTED_MODULE_0__["Type"].Single : _d;
+        this._showValue = showValue;
+        this._orientation = orientation;
+        this._steps = steps;
+        this._position = position;
+        this._parentEl = parentEl;
+        this._type = type;
+        this.create();
     }
+    SliderView.prototype.create = function () {
+        this._parentEl.classList.add('slider', 'slider_horizontal');
+        var handler = document.createElement('div');
+        handler.classList.add('slider__handler');
+        this._parentEl.appendChild(handler);
+        this.moveHandler(this._position);
+    };
+    SliderView.prototype.moveHandler = function (position) {
+        var el = this._parentEl.querySelector('.slider__handler');
+        el.style.left = position + '%';
+    };
     return SliderView;
 }());
 
 
-
-/***/ }),
-
-/***/ "./src/index.ts":
-/*!**********************!*\
-  !*** ./src/index.ts ***!
-  \**********************/
-/*! no exports provided */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* WEBPACK VAR INJECTION */(function(jQuery, $) {/* harmony import */ var _SliderController__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./SliderController */ "./src/SliderController.ts");
-
-(function ($) {
-    $.fn.slider = function (options) {
-        return this.each(function () {
-            if (!$.data(this, "slider")) {
-                $.data(this, "slider", new _SliderController__WEBPACK_IMPORTED_MODULE_0__["SliderController"](this, options));
-            }
-        });
-    };
-}(jQuery));
-$('.test').slider({});
-
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js"), __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js")))
 
 /***/ }),
 
@@ -10871,6 +10883,49 @@ var Type;
     Type[Type["Range"] = 1] = "Range";
 })(Type || (Type = {}));
 
+
+/***/ }),
+
+/***/ "./src/slider.scss":
+/*!*************************!*\
+  !*** ./src/slider.scss ***!
+  \*************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// extracted by mini-css-extract-plugin
+
+/***/ }),
+
+/***/ "./src/slider.ts":
+/*!***********************!*\
+  !*** ./src/slider.ts ***!
+  \***********************/
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* WEBPACK VAR INJECTION */(function(jQuery, $) {/* harmony import */ var _slider_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./slider.scss */ "./src/slider.scss");
+/* harmony import */ var _slider_scss__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_slider_scss__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _SliderController__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./SliderController */ "./src/SliderController.ts");
+
+
+(function ($) {
+    $.fn.slider = function (options) {
+        return this.each(function () {
+            if (!$.data(this, "slider")) {
+                $.data(this, "slider", new _SliderController__WEBPACK_IMPORTED_MODULE_1__["SliderController"](this, options));
+            }
+        });
+    };
+}(jQuery));
+$('.test1').slider({});
+$('.test2').slider({ min: 4, max: 14, value: 8 });
+$('.test3').slider({ min: 0, max: 10 });
+$('.test4').slider({ min: -10, max: 5, value: 0 });
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js"), __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js")))
 
 /***/ })
 

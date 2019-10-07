@@ -1,3 +1,5 @@
+import "./slider.scss"
+
 import {Options} from "./interfaces";
 import {SliderController} from "./SliderController";
 
@@ -17,5 +19,8 @@ declare global{
     };
 }(jQuery));
 
-$('.test').slider({});
+$('.test1').slider({});
+$('.test2').slider({min:4, max:14, value:8});
+$('.test3').slider({min:0, max:10});
+$('.test4').slider({min:-10, max: 5, value: 0});
 

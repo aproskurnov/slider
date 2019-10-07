@@ -1,0 +1,19 @@
+.slider{
+  position: relative;
+  border: 1px solid;
+  margin: 20px 20px;
+  &__handler{
+    position: absolute;
+    width: 20px;
+    height: 18px;
+    top: -3px;
+    background-color: cornflowerblue;
+    cursor: pointer;
+  }
+  &_horizontal{
+    height: 10px;
+  }
+  &_vertical{
+    width: 20px;
+  }
+}
