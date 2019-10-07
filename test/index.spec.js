@@ -1,5 +1,6 @@
-var chai = require('chai');
+import chai from 'chai'
 import {SliderModel} from "../src/SliderModel";
+import {Type} from '../src/interfaces';
 
 
 
@@ -12,27 +13,33 @@ describe('Test test config', () => {
 describe('Slider Model tests', ()=>{
     describe('verify init params', ()=>{
         it('init max < min', ()=>{
-            chai.to.throw(new SliderModel({min:10, max:9}));
+            let fn = function(){new SliderModel({min:10, max:9})};
+            chai.expect(fn).to.throw();
         });
 
         it('default max < min', ()=>{
-            chai.to.throw(new SliderModel({max:-5}));
+            let fn = function(){new SliderModel({max:-5})};
+            chai.expect(fn).to.throw();
         });
 
         it('max == min', ()=>{
-            chai.to.throw(new SliderModel({min:10, max:10}));
+            let fn = function(){new SliderModel({min:10, max:10})};
+            chai.expect(fn).to.throw();
         });
 
         it('init value < min', ()=>{
-            chai.to.throw(new SliderModel({min:2, max:9, value: 1}));
+            let fn = function(){new SliderModel({min:2, max:9, value: 1})};
+            chai.expect(fn).to.throw();
         });
 
         it('init value > max', ()=>{
-            chai.to.throw(new SliderModel({min:0, max:9, value: 10}));
+            let fn = function(){new SliderModel({min:0, max:9, value: 10})};
+            chai.expect(fn).to.throw();
         });
 
         it('diff max and min is at least one step', ()=>{
-            chai.to.throw(new SliderModel({min:0, max:4, step: 5}));
+            let fn = function(){new SliderModel({min:0, max:4, step: 5})};
+            chai.expect(fn).to.throw();
         });
     });
 
