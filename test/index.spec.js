@@ -66,4 +66,18 @@ describe('Slider Model tests', ()=>{
         });
 
     });
+
+    describe('position', ()=>{
+        it('convert view position to model value ', ()=>{
+            let model = new SliderModel({min:0, max:10, step:1, type:Type.Single});
+            model.position = 20;
+            chai.assert.equal(model.value, 2);
+        });
+
+        it('convert model value to view position ', ()=>{
+            let model = new SliderModel({min:0, max:10, step:1, type:Type.Single});
+            model.value = 2;
+            chai.assert.equal(model.position, 20);
+        });
+    })
 });
