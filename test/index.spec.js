@@ -18,6 +18,14 @@ describe('Slider Model tests', ()=>{
         it('max == min', ()=>{
             chai.to.throw(new SliderModel({min:10, max:10}));
         });
+
+        it('init value < min', ()=>{
+            chai.to.throw(new SliderModel({min:2, max:9, value: 1}));
+        });
+
+        it('init value > max', ()=>{
+            chai.to.throw(new SliderModel({min:0, max:9, value: 10}));
+        });
     });
 
     describe('setValue calculation', ()=>{
