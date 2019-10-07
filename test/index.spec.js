@@ -11,8 +11,12 @@ describe('Test test config', () => {
 
 describe('Slider Model tests', ()=>{
     describe('verify init params', ()=>{
-        it('max < min', ()=>{
+        it('init max < min', ()=>{
             chai.to.throw(new SliderModel({min:10, max:9}));
+        });
+
+        it('default max < min', ()=>{
+            chai.to.throw(new SliderModel({max:-5}));
         });
 
         it('max == min', ()=>{
