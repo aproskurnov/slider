@@ -41,6 +41,11 @@ describe('Slider Model tests', ()=>{
             let fn = function(){new SliderModel({min:0, max:4, step: 5})};
             chai.expect(fn).to.throw();
         });
+
+        it('diff max and min proportional steps', ()=>{
+            let model = new SliderModel({min:4, max:13, step: 2});
+            chai.assert.equal(model.max, 14);
+        });
     });
 
     describe('setValue calculation', ()=>{
