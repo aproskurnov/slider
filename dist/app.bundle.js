@@ -10736,27 +10736,12 @@ __webpack_require__.r(__webpack_exports__);
 
 var SliderModel = /** @class */ (function () {
     function SliderModel(_a) {
-        var min = _a.min, max = _a.max, step = _a.step, type = _a.type, value = _a.value;
-        this._min = 0;
-        this._max = 10;
-        this._step = 1;
-        this._type = _interfaces__WEBPACK_IMPORTED_MODULE_0__["Type"].Single;
-        this._value = 0;
-        if (min) {
-            this._min = min;
-        }
-        if (max) {
-            this._max = max;
-        }
-        if (step) {
-            this._step = step;
-        }
-        if (type) {
-            this._type = type;
-        }
-        if (value) {
-            this.value = value;
-        }
+        var _b = _a.min, min = _b === void 0 ? 0 : _b, _c = _a.max, max = _c === void 0 ? 9 : _c, _d = _a.step, step = _d === void 0 ? 1 : _d, _e = _a.type, type = _e === void 0 ? _interfaces__WEBPACK_IMPORTED_MODULE_0__["Type"].Single : _e, value = _a.value;
+        this._min = min;
+        this._max = max;
+        this._step = step;
+        this._type = type;
+        this._value = this._min;
         if (this._max <= this._min) {
             throw "min must be less than max";
         }
@@ -10764,13 +10749,10 @@ var SliderModel = /** @class */ (function () {
         if (fraction !== 0) {
             this._max = this._max + fraction;
         }
-        if (value && value < this._min) {
-            throw "init value must be more or equal min";
+        if (value) {
+            this.value = value;
         }
-        if (value && value > this._max) {
-            throw "init value must be less or equal max";
-        }
-        if (!value) {
+        else {
             this.value = Math.round((this._max - this._min) / 2);
         }
     }

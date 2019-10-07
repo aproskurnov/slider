@@ -1,29 +1,18 @@
 import {Options, Type} from "./interfaces";
 
 class SliderModel{
-    private _min:number = 0;
-    private _max:number = 10;
-    private _step:number = 1;
-    private _type:Type = Type.Single;
-    private _value:number = 0;
-    constructor({min, max, step, type, value}:Options) {
+    private _min:number;
+    private _max:number;
+    private _step:number;
+    private _type:Type;
+    private _value:number;
+    constructor({min=0, max=9, step=1, type=Type.Single, value}:Options) {
 
-        if (min){
-            this._min = min;
-        }
-        if (max){
-            this._max = max;
-        }
-        if (step){
-            this._step = step;
-        }
-        if (type){
-            this._type = type;
-        }
-
-        if (value){
-            this.value = value;
-        }
+        this._min = min;
+        this._max = max;
+        this._step = step;
+        this._type = type;
+        this._value = this._min;
 
         if (this._max <= this._min){
             throw "min must be less than max";
@@ -32,14 +21,10 @@ class SliderModel{
         if (fraction !== 0){
             this._max = this._max + fraction;
         }
-        if (value && value < this._min){
-            throw "init value must be more or equal min";
-        }
-        if (value && value > this._max){
-            throw "init value must be less or equal max";
-        }
 
-        if (!value){
+        if (value){
+            this.value = value;
+        }else{
             this.value = Math.round((this._max - this._min)/2);
         }
 

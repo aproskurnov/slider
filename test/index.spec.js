@@ -27,14 +27,14 @@ describe('Slider Model tests', ()=>{
             chai.expect(fn).to.throw();
         });
 
-        it('init value < min', ()=>{
-            let fn = function(){new SliderModel({min:2, max:9, value: 1})};
-            chai.expect(fn).to.throw();
+        it('init value < min, val = min', ()=>{
+            let model = new SliderModel({min:2, max:9, value: 1});
+            chai.assert.equal(model.value, 2);
         });
 
-        it('init value > max', ()=>{
-            let fn = function(){new SliderModel({min:0, max:9, value: 10})};
-            chai.expect(fn).to.throw();
+        it('init value > max, val = max', ()=>{
+            let model = new SliderModel({min:0, max:9, value: 10});
+            chai.assert.equal(model.value, 9);
         });
 
         it('diff max and min proportional steps', ()=>{
