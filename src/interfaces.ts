@@ -14,5 +14,6 @@ export interface Options {
     step?: number,
     showValue?: boolean,
     orientation?: Orientation,
-    type?:Type
+    type?:Type,
+    value?: number
 }

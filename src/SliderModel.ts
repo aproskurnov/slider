@@ -6,7 +6,8 @@ class SliderModel{
     private _step:number = 1;
     private _type:Type = Type.Single;
     private _value:number = 0;
-    constructor({min, max, step, type}:Options) {
+    constructor({min, max, step, type, value}:Options) {
+
         if (min){
             this._min = min;
         }
@@ -20,7 +21,26 @@ class SliderModel{
             this._type = type;
         }
 
-        this.value = Math.round((this._max - this._min)/2);
+        if (value){
+            this.value = value;
+        }
+
+        if (this._max <= this._min){
+            throw "min must be less than max";
+        }
+        if ((this._max - this._min) < 0){
+            throw "diff between max and min must be at least one step"
+        }
+        if (value && value < this._min){
+            throw "init value must be more or equal min";
+        }
+        if (value && value > this._max){
+            throw "init value must be less or equal max";
+        }
+
+        if (!value){
+            this.value = Math.round((this._max - this._min)/2);
+        }
 
     }
     public get value(){
