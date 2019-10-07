@@ -45,12 +45,12 @@ describe('Slider Model tests', ()=>{
 
     describe('setValue calculation', ()=>{
         it('single type, round to the nearest step up', ()=>{
-            let model = new SliderModel({min:0, max:9, step:1, type:Type.Single});
+            let model = new SliderModel({min:0, max:9, step:3, type:Type.Single});
             model.value = 5;
             chai.assert.equal(model.value, 6);
         });
         it('single type, round to the nearest step down ', ()=>{
-            let model = new SliderModel({min:0, max:9, step:1, type:Type.Single});
+            let model = new SliderModel({min:0, max:9, step:3, type:Type.Single});
             model.value = 4;
             chai.assert.equal(model.value, 3);
         });
