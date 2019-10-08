@@ -66,7 +66,14 @@ class SliderModel{
         return this._position;
     }
     public set position(v){
-        this.value = v/this._steps * this._step;
+        let steps = v/(100/this._steps);
+        let valInStep = (this._max - this._min)/this._steps;
+        this.value = this._min + steps * valInStep;
+    }
+    public move(rect: ClientRect, x:number){
+        let pos = x - rect.left;
+        this.position = 100 * pos / rect.width;
+
     }
 
 }

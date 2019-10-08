@@ -6,9 +6,10 @@
     position: absolute;
     width: 20px;
     height: 18px;
-    top: -3px;
+    top: -4px;
     background-color: cornflowerblue;
     cursor: pointer;
+    transform: translate(-10px, 0px);
   }
   &_horizontal{
     height: 10px;

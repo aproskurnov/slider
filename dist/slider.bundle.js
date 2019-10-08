@@ -10712,9 +10712,38 @@ __webpack_require__.r(__webpack_exports__);
 
 var SliderController = /** @class */ (function () {
     function SliderController(node, options) {
-        this.model = new _SliderModel__WEBPACK_IMPORTED_MODULE_0__["SliderModel"](options);
-        this.view = new _SliderView__WEBPACK_IMPORTED_MODULE_1__["SliderView"](options, this.model.steps, this.model.position, node);
+        this._moving = false;
+        this._model = new _SliderModel__WEBPACK_IMPORTED_MODULE_0__["SliderModel"](options);
+        this._view = new _SliderView__WEBPACK_IMPORTED_MODULE_1__["SliderView"](options, this._model.steps, this._model.position, node, {
+            onMouseDown: this.startMoving.bind(this),
+            onMouseUp: this.endMoving.bind(this),
+            onMouseMove: this.move.bind(this),
+            onMouseLeave: this.leave.bind(this)
+        });
     }
+    SliderController.prototype.startMoving = function () {
+        this._moving = true;
+    };
+    SliderController.prototype.endMoving = function () {
+        if (this._moving) {
+            this._moving = false;
+        }
+    };
+    SliderController.prototype.move = function (e) {
+        if (this._moving) {
+            if (e.target) {
+                this._model.move(this._view.getRect(), e.clientX);
+                this._view.move(this._model.position);
+            }
+        }
+    };
+    SliderController.prototype.leave = function (e) {
+        if (e.target) {
+            if (this._moving) {
+                this._moving = false;
+            }
+        }
+    };
     return SliderController;
 }());
 
@@ -10807,11 +10836,17 @@ var SliderModel = /** @class */ (function () {
             return this._position;
         },
         set: function (v) {
-            this.value = v / this._steps * this._step;
+            var steps = v / (100 / this._steps);
+            var valInStep = (this._max - this._min) / this._steps;
+            this.value = this._min + steps * valInStep;
         },
         enumerable: true,
         configurable: true
     });
+    SliderModel.prototype.move = function (rect, x) {
+        var pos = x - rect.left;
+        this.position = 100 * pos / rect.width;
+    };
     return SliderModel;
 }());
 
@@ -10833,7 +10868,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var SliderView = /** @class */ (function () {
-    function SliderView(_a, steps, position, parentEl) {
+    function SliderView(_a, steps, position, parentEl, sliderEvents) {
         var _b = _a.showValue, showValue = _b === void 0 ? false : _b, _c = _a.orientation, orientation = _c === void 0 ? _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Horizontal : _c, _d = _a.type, type = _d === void 0 ? _interfaces__WEBPACK_IMPORTED_MODULE_0__["Type"].Single : _d;
         this._showValue = showValue;
         this._orientation = orientation;
@@ -10841,18 +10876,33 @@ var SliderView = /** @class */ (function () {
         this._position = position;
         this._parentEl = parentEl;
         this._type = type;
+        this._sliderEvents = sliderEvents;
+        this._handler = null;
         this.create();
+        this.bindEvents();
     }
+    SliderView.prototype.move = function (position) {
+        if (this._handler) {
+            this._handler.style.left = position + '%';
+        }
+    };
     SliderView.prototype.create = function () {
         this._parentEl.classList.add('slider', 'slider_horizontal');
-        var handler = document.createElement('div');
-        handler.classList.add('slider__handler');
-        this._parentEl.appendChild(handler);
-        this.moveHandler(this._position);
+        this._handler = document.createElement('div');
+        this._handler.classList.add('slider__handler');
+        this._parentEl.appendChild(this._handler);
+        this.move(this._position);
     };
-    SliderView.prototype.moveHandler = function (position) {
-        var el = this._parentEl.querySelector('.slider__handler');
-        el.style.left = position + '%';
+    SliderView.prototype.bindEvents = function () {
+        if (this._handler) {
+            this._handler.addEventListener('mousedown', this._sliderEvents.onMouseDown);
+            document.addEventListener('mouseup', this._sliderEvents.onMouseUp);
+            document.addEventListener('mouseleave', this._sliderEvents.onMouseLeave);
+            document.addEventListener('mousemove', this._sliderEvents.onMouseMove);
+        }
+    };
+    SliderView.prototype.getRect = function () {
+        return this._parentEl.getBoundingClientRect();
     };
     return SliderView;
 }());

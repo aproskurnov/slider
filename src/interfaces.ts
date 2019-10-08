@@ -17,3 +17,10 @@ export interface Options {
     type?:Type,
     value?: number
 }
+
+export interface SliderEvents {
+    onMouseDown():void,
+    onMouseUp():void,
+    onMouseMove(e:MouseEvent):void
+    onMouseLeave(e:Event):void
+}
