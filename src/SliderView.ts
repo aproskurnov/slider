@@ -1,5 +1,5 @@
 import * as interfaces from "./interfaces";
-import {Type, SliderEvents} from "./interfaces";
+import {Orientation, SliderEvents, Type} from "./interfaces";
 
 class SliderView{
     private _showValue:boolean;
@@ -27,15 +27,35 @@ class SliderView{
     public move(position:number)
     {
         if (this._handler){
-            this._handler.style.left = position + '%';
+            if (this._orientation === Orientation.Horizontal){
+                this._handler.style.left = position + '%';
+            }else if (this._orientation === Orientation.Vertical){
+                this._handler.style.top = position + '%';
+            }
+
         }
 
     }
     public create(){
-        this._parentEl.classList.add('slider', 'slider_horizontal');
+        this._parentEl.classList.add('slider');
+
+        if (this._orientation === Orientation.Horizontal){
+            this._parentEl.classList.add('slider_horizontal');
+        }else if (this._orientation === Orientation.Vertical){
+            this._parentEl.classList.add('slider_vertical');
+        }
+
         this._handler = document.createElement('div');
         this._handler.classList.add('slider__handler');
+
+        if (this._orientation === Orientation.Horizontal){
+            this._handler.classList.add('slider__handler_horizontal');
+        }else if (this._orientation === Orientation.Vertical){
+            this._handler.classList.add('slider__handler_vertical');
+        }
+
         this._parentEl.appendChild(this._handler);
+
         this.move(this._position);
     }
     public bindEvents()
@@ -51,6 +71,10 @@ class SliderView{
     public getRect():ClientRect
     {
         return this._parentEl.getBoundingClientRect();
+    }
+
+    public get orientation(){
+        return this._orientation;
     }
 
 

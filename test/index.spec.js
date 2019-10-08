@@ -84,38 +84,17 @@ describe('Slider Model tests', ()=>{
     describe('move', ()=>{
         it('x = 30 set to 20', ()=>{
             let model = new SliderModel({min:4, max:14, step:2, type:Type.Single});
-            model.move({
-                bottom: 120,
-                height: 20,
-                left: 10,
-                right: 110,
-                top: 100,
-                width: 100,
-            }, 30);
+            model.move(10, 100, 30);
             chai.assert.equal(model.position, 20);
         });
         it('less than 0 set to min', ()=>{
             let model = new SliderModel({min:4, max:14, step:2, type:Type.Single});
-            model.move({
-                bottom: 120,
-                height: 20,
-                left: 10,
-                right: 110,
-                top: 100,
-                width: 100,
-            }, -10);
+            model.move(10, 100, -10);
             chai.assert.equal(model.position, 0);
         });
         it('more than 100 set to max', ()=>{
             let model = new SliderModel({min:4, max:14, step:2, type:Type.Single});
-            model.move({
-                bottom: 120,
-                height: 20,
-                left: 10,
-                right: 110,
-                top: 100,
-                width: 100,
-            }, 110);
+            model.move(10, 100, 110);
             chai.assert.equal(model.position, 100);
         });
     });

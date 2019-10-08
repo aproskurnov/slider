@@ -1,6 +1,6 @@
 import "./slider.scss"
 
-import {Options} from "./interfaces";
+import {Options, Orientation} from "./interfaces";
 import {SliderController} from "./SliderController";
 
 declare global{
@@ -22,5 +22,5 @@ declare global{
 $('.test1').slider({});
 $('.test2').slider({min:4, max:14, value:8});
 $('.test3').slider({min:0, max:10});
-$('.test4').slider({min:-10, max: 5, value: 0});
+$('.test4').slider({min:-10, max: 5, value: 0, orientation:Orientation.Vertical});
 

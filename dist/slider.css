@@ -6,12 +6,17 @@
     position: absolute;
     width: 20px;
     height: 18px;
-    top: -4px;
     background-color: cornflowerblue;
-    cursor: pointer;
-    transform: translate(-10px, 0px); }
+    cursor: pointer; }
+    .slider__handler_horizontal {
+      top: -4px;
+      transform: translate(-10px, 0px); }
+    .slider__handler_vertical {
+      left: -5px;
+      transform: translate(0px, -10px); }
   .slider_horizontal {
     height: 10px; }
   .slider_vertical {
-    width: 20px; }
+    width: 10px;
+    height: 200px; }
 

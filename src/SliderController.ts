@@ -1,4 +1,4 @@
-import {Options} from "./interfaces";
+import {Options, Orientation} from "./interfaces";
 import {SliderModel} from "./SliderModel";
 import {SliderView} from "./SliderView";
 
@@ -27,7 +27,14 @@ class SliderController{
     private move(e:MouseEvent){
         if (this._moving){
             if (e.target){
-                this._model.move(this._view.getRect(), e.clientX);
+                let rect = this._view.getRect();
+
+                if (this._view.orientation === Orientation.Horizontal){
+                    this._model.move(rect.left, rect.width, e.clientX);
+                }else if (this._view.orientation === Orientation.Vertical){
+                    this._model.move(rect.top, rect.height, e.clientY);
+                }
+
                 this._view.move(this._model.position);
             }
         }
