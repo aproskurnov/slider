@@ -2,6 +2,7 @@ import "./slider.scss"
 
 import {Options, Orientation} from "./interfaces";
 import {SliderController} from "./SliderController";
+import {SliderModel} from "./SliderModel";
 
 declare global{
     interface JQuery{
@@ -20,7 +21,7 @@ declare global{
 }(jQuery));
 
 $('.test1').slider({});
-$('.test2').slider({min:4, max:14, value:8});
-$('.test3').slider({min:0, max:10});
-$('.test4').slider({min:-10, max: 5, value: 0, orientation:Orientation.Vertical});
+$('.test2').slider({min:4, max:14, values:[8]});
+$('.test3').slider({min:0, max:10, values:[2, 5]});
+$('.test4').slider({min:-10, max: 5, values: [0, 3], orientation:Orientation.Vertical});
 

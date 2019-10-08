@@ -14,12 +14,11 @@ export interface Options {
     step?: number,
     showValue?: boolean,
     orientation?: Orientation,
-    type?:Type,
-    value?: number
+    values?: number[]
 }
 
 export interface SliderEvents {
-    onMouseDown():void,
+    onMouseDown(e:MouseEvent):void,
     onMouseUp():void,
     onMouseMove(e:MouseEvent):void
     onMouseLeave(e:Event):void

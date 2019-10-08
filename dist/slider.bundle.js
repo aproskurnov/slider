@@ -10714,43 +10714,35 @@ __webpack_require__.r(__webpack_exports__);
 
 var SliderController = /** @class */ (function () {
     function SliderController(node, options) {
-        this._moving = false;
+        this._activeHandler = null;
         this._model = new _SliderModel__WEBPACK_IMPORTED_MODULE_1__["SliderModel"](options);
-        this._view = new _SliderView__WEBPACK_IMPORTED_MODULE_2__["SliderView"](options, this._model.steps, this._model.position, node, {
+        this._view = new _SliderView__WEBPACK_IMPORTED_MODULE_2__["SliderView"](options, this._model.steps, this._model.positions, node, {
             onMouseDown: this.startMoving.bind(this),
             onMouseUp: this.endMoving.bind(this),
             onMouseMove: this.move.bind(this),
             onMouseLeave: this.leave.bind(this)
         });
     }
-    SliderController.prototype.startMoving = function () {
-        this._moving = true;
+    SliderController.prototype.startMoving = function (e) {
+        this._activeHandler = Number(e.target.getAttribute('data-num-handle') || '0');
     };
     SliderController.prototype.endMoving = function () {
-        if (this._moving) {
-            this._moving = false;
-        }
+        this._activeHandler = null;
     };
     SliderController.prototype.move = function (e) {
-        if (this._moving) {
-            if (e.target) {
-                var rect = this._view.getRect();
-                if (this._view.orientation === _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Horizontal) {
-                    this._model.move(rect.left, rect.width, e.clientX);
-                }
-                else if (this._view.orientation === _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Vertical) {
-                    this._model.move(rect.top, rect.height, e.clientY);
-                }
-                this._view.move(this._model.position);
+        if (this._activeHandler !== null) {
+            var rect = this._view.getRect();
+            if (this._view.orientation === _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Horizontal) {
+                this._model.move(rect.left, rect.width, this._activeHandler, e.clientX);
             }
+            else if (this._view.orientation === _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Vertical) {
+                this._model.move(rect.top, rect.height, this._activeHandler, e.clientY);
+            }
+            this._view.move(this._model.positions);
         }
     };
-    SliderController.prototype.leave = function (e) {
-        if (e.target) {
-            if (this._moving) {
-                this._moving = false;
-            }
-        }
+    SliderController.prototype.leave = function () {
+        this._activeHandler = null;
     };
     return SliderController;
 }());
@@ -10769,17 +10761,14 @@ var SliderController = /** @class */ (function () {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SliderModel", function() { return SliderModel; });
-/* harmony import */ var _interfaces__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./interfaces */ "./src/interfaces.ts");
-
 var SliderModel = /** @class */ (function () {
     function SliderModel(_a) {
-        var _b = _a.min, min = _b === void 0 ? 0 : _b, _c = _a.max, max = _c === void 0 ? 9 : _c, _d = _a.step, step = _d === void 0 ? 1 : _d, _e = _a.type, type = _e === void 0 ? _interfaces__WEBPACK_IMPORTED_MODULE_0__["Type"].Single : _e, value = _a.value;
+        var _b = _a.min, min = _b === void 0 ? 0 : _b, _c = _a.max, max = _c === void 0 ? 9 : _c, _d = _a.step, step = _d === void 0 ? 1 : _d, values = _a.values;
         this._min = min;
         this._max = max;
         this._step = step;
-        this._type = type;
-        this._value = this._min;
-        this._position = 0;
+        this._positions = [];
+        this._values = [this._min];
         if (this._max <= this._min) {
             throw "min must be less than max";
         }
@@ -10788,32 +10777,104 @@ var SliderModel = /** @class */ (function () {
             this._max = this._max + fraction;
         }
         this._steps = (this._max - this._min) / this._step;
-        if (value) {
-            this.value = value;
+        if (values && values.length) {
+            if (values.length > 2) {
+                throw "count values must be less or equal 2";
+            }
+            values.reduce(function (left, current) {
+                if (left >= current) {
+                    throw "left must be less than right";
+                }
+                return current;
+            });
+            if (values[0] < this._min) {
+                throw "values must be in range min <=> max ";
+            }
+            if (values[values.length - 1] > this._max) {
+                throw "values must be in range min <=> max ";
+            }
+            this.values = values;
         }
         else {
-            this.value = Math.round((this._max - this._min) / 2) + this._min;
+            this.values = [Math.round((this._max - this._min) / 2) + this._min];
         }
     }
-    Object.defineProperty(SliderModel.prototype, "value", {
+    Object.defineProperty(SliderModel.prototype, "values", {
         get: function () {
-            return this._value;
+            return this._values;
         },
-        set: function (v) {
-            if (v > this._max) {
-                this._value = this._max;
+        set: function (val) {
+            var _this = this;
+            if (val.length > 2) {
+                throw "count values must be less or equal 2";
             }
-            else if (v < this._min) {
-                this._value = this._min;
+            var oldValues = this.values;
+            var changedPos = null;
+            var changeMoreThanOne = false;
+            if (oldValues.length !== val.length) {
+                changeMoreThanOne = true;
             }
             else {
-                var full = (v - this._min) / this._step + this._min >> 0;
-                var fraction = v - (full * this._step + this._min);
-                var round = Math.round(fraction / this._step);
-                this._value = this._min + full * this._step + round * this._step;
+                val.map(function (v, i) {
+                    if (v !== oldValues[i]) {
+                        if (changedPos === null) {
+                            changedPos = i;
+                        }
+                        else {
+                            changeMoreThanOne = true;
+                        }
+                    }
+                });
             }
-            var stepsCur = (this._value - this._min) / this._step;
-            this._position = 100 / this._steps * stepsCur;
+            if (changeMoreThanOne) {
+                val.reduce(function (left, current) {
+                    if (left >= current) {
+                        throw "left must be less than right";
+                    }
+                    return current;
+                });
+                if (val[0] < this._min) {
+                    throw "values must be in range min <=> max ";
+                }
+                if (val[val.length - 1] > this._max) {
+                    throw "values must be in range min <=> max ";
+                }
+                val.map(function (v, i, arr) {
+                    var value = _this.convertToStepValueByValue(v);
+                    if ((arr[i - 1] === value) || (arr[i + 1] === value)) {
+                        throw "too close values";
+                    }
+                    arr[i] = value;
+                });
+            }
+            else {
+                if (changedPos === null) {
+                    return;
+                }
+                val.map(function (v, i, arr) {
+                    if (i === changedPos) {
+                        var value = _this.convertToStepValueByValue(v);
+                        if (arr[i - 1] >= value) {
+                            value = arr[i - 1] + _this._step;
+                        }
+                        else if (arr[i + 1] <= value) {
+                            value = arr[i + 1] - _this._step;
+                        }
+                        else if (value < _this._min) {
+                            value = _this._min;
+                        }
+                        else if (value > _this._max) {
+                            value = _this._max;
+                        }
+                        arr[i] = value;
+                    }
+                });
+            }
+            this._values = val;
+            this._positions = val.map(function (v) {
+                var stepsCur = (v - _this._min) / _this._step;
+                return 100 / _this._steps * stepsCur;
+            });
         },
         enumerable: true,
         configurable: true
@@ -10839,21 +10900,32 @@ var SliderModel = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(SliderModel.prototype, "position", {
+    Object.defineProperty(SliderModel.prototype, "positions", {
         get: function () {
-            return this._position;
+            return this._positions;
         },
-        set: function (v) {
-            var steps = v / (100 / this._steps);
-            var valInStep = (this._max - this._min) / this._steps;
-            this.value = this._min + steps * valInStep;
+        set: function (val) {
+            var _this = this;
+            this.values = val.map(function (v) {
+                var steps = v / (100 / _this._steps);
+                var valInStep = (_this._max - _this._min) / _this._steps;
+                return _this._min + steps * valInStep;
+            });
         },
         enumerable: true,
         configurable: true
     });
-    SliderModel.prototype.move = function (offset, length, pos) {
+    SliderModel.prototype.move = function (offset, length, numHandle, pos) {
+        var positions = this.positions;
         var relativePos = pos - offset;
-        this.position = 100 * relativePos / length;
+        positions[numHandle] = 100 * relativePos / length;
+        this.positions = positions;
+    };
+    SliderModel.prototype.convertToStepValueByValue = function (val) {
+        var full = (val - this._min) / this._step + this._min >> 0;
+        var fraction = val - (full * this._step + this._min);
+        var round = Math.round(fraction / this._step);
+        return this._min + full * this._step + round * this._step;
     };
     return SliderModel;
 }());
@@ -10876,30 +10948,29 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var SliderView = /** @class */ (function () {
-    function SliderView(_a, steps, position, parentEl, sliderEvents) {
+    function SliderView(_a, steps, positions, parentEl, sliderEvents) {
         var _b = _a.showValue, showValue = _b === void 0 ? false : _b, _c = _a.orientation, orientation = _c === void 0 ? _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Horizontal : _c, _d = _a.type, type = _d === void 0 ? _interfaces__WEBPACK_IMPORTED_MODULE_0__["Type"].Single : _d;
         this._showValue = showValue;
         this._orientation = orientation;
         this._steps = steps;
-        this._position = position;
+        this._positions = positions;
         this._parentEl = parentEl;
         this._type = type;
         this._sliderEvents = sliderEvents;
-        this._handler = null;
+        this._handlers = [];
         this.create();
         this.bindEvents();
     }
-    SliderView.prototype.move = function (position) {
-        if (this._handler) {
-            if (this._orientation === _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Horizontal) {
-                this._handler.style.left = position + '%';
-            }
-            else if (this._orientation === _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Vertical) {
-                this._handler.style.top = position + '%';
-            }
+    SliderView.prototype.move = function (positions) {
+        if (this._orientation === _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Horizontal) {
+            this._handlers.map(function (v, i) { v.style.left = positions[i] + '%'; });
+        }
+        else if (this._orientation === _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Vertical) {
+            this._handlers.map(function (v, i) { v.style.top = positions[i] + '%'; });
         }
     };
     SliderView.prototype.create = function () {
+        var _this = this;
         this._parentEl.classList.add('slider');
         if (this._orientation === _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Horizontal) {
             this._parentEl.classList.add('slider_horizontal');
@@ -10907,24 +10978,29 @@ var SliderView = /** @class */ (function () {
         else if (this._orientation === _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Vertical) {
             this._parentEl.classList.add('slider_vertical');
         }
-        this._handler = document.createElement('div');
-        this._handler.classList.add('slider__handler');
-        if (this._orientation === _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Horizontal) {
-            this._handler.classList.add('slider__handler_horizontal');
-        }
-        else if (this._orientation === _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Vertical) {
-            this._handler.classList.add('slider__handler_vertical');
-        }
-        this._parentEl.appendChild(this._handler);
-        this.move(this._position);
+        this._positions.map(function (v, i) {
+            var handler = document.createElement('div');
+            handler.classList.add('slider__handler');
+            handler.setAttribute('data-num-handle', String(i));
+            if (_this._orientation === _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Horizontal) {
+                handler.classList.add('slider__handler_horizontal');
+            }
+            else if (_this._orientation === _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Vertical) {
+                handler.classList.add('slider__handler_vertical');
+            }
+            _this._parentEl.appendChild(handler);
+            _this._handlers.push(handler);
+        });
+        this.move(this._positions);
     };
     SliderView.prototype.bindEvents = function () {
-        if (this._handler) {
-            this._handler.addEventListener('mousedown', this._sliderEvents.onMouseDown);
-            document.addEventListener('mouseup', this._sliderEvents.onMouseUp);
-            document.addEventListener('mouseleave', this._sliderEvents.onMouseLeave);
-            document.addEventListener('mousemove', this._sliderEvents.onMouseMove);
-        }
+        var _this = this;
+        this._handlers.map(function (v) {
+            v.addEventListener('mousedown', _this._sliderEvents.onMouseDown);
+        });
+        document.addEventListener('mouseup', this._sliderEvents.onMouseUp);
+        document.addEventListener('mouseleave', this._sliderEvents.onMouseLeave);
+        document.addEventListener('mousemove', this._sliderEvents.onMouseMove);
     };
     SliderView.prototype.getRect = function () {
         return this._parentEl.getBoundingClientRect();
@@ -11005,9 +11081,9 @@ __webpack_require__.r(__webpack_exports__);
     };
 }(jQuery));
 $('.test1').slider({});
-$('.test2').slider({ min: 4, max: 14, value: 8 });
-$('.test3').slider({ min: 0, max: 10 });
-$('.test4').slider({ min: -10, max: 5, value: 0, orientation: _interfaces__WEBPACK_IMPORTED_MODULE_1__["Orientation"].Vertical });
+$('.test2').slider({ min: 4, max: 14, values: [8] });
+$('.test3').slider({ min: 0, max: 10, values: [2, 5] });
+$('.test4').slider({ min: -10, max: 5, values: [0, 3], orientation: _interfaces__WEBPACK_IMPORTED_MODULE_1__["Orientation"].Vertical });
 
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js"), __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js")))
 

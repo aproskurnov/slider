@@ -5,36 +5,32 @@ class SliderView{
     private _showValue:boolean;
     private _orientation:interfaces.Orientation;
     private _steps:number;
-    private _position:number;
+    private _positions:number[];
     private _parentEl:HTMLElement;
-    private _handler:HTMLElement | null;
+    private _handlers:HTMLElement[];
     private _type: Type;
     private _sliderEvents: SliderEvents;
     constructor({showValue = false, orientation = interfaces.Orientation.Horizontal, type = Type.Single},
-                steps:number, position:number, parentEl:HTMLElement, sliderEvents: SliderEvents){
+                steps:number, positions:number[], parentEl:HTMLElement, sliderEvents: SliderEvents){
         this._showValue = showValue;
         this._orientation = orientation;
         this._steps = steps;
-        this._position = position;
+        this._positions = positions;
         this._parentEl = parentEl;
         this._type = type;
         this._sliderEvents = sliderEvents;
-        this._handler = null;
+        this._handlers = [];
 
         this.create();
         this.bindEvents();
     }
-    public move(position:number)
+    public move(positions:number[])
     {
-        if (this._handler){
-            if (this._orientation === Orientation.Horizontal){
-                this._handler.style.left = position + '%';
-            }else if (this._orientation === Orientation.Vertical){
-                this._handler.style.top = position + '%';
-            }
-
+        if (this._orientation === Orientation.Horizontal){
+            this._handlers.map((v, i)=>{v.style.left = positions[i] + '%'});
+        }else if (this._orientation === Orientation.Vertical){
+            this._handlers.map((v, i)=>{v.style.top = positions[i] + '%'});
         }
-
     }
     public create(){
         this._parentEl.classList.add('slider');
@@ -45,28 +41,34 @@ class SliderView{
             this._parentEl.classList.add('slider_vertical');
         }
 
-        this._handler = document.createElement('div');
-        this._handler.classList.add('slider__handler');
+        this._positions.map((v, i)=>{
 
-        if (this._orientation === Orientation.Horizontal){
-            this._handler.classList.add('slider__handler_horizontal');
-        }else if (this._orientation === Orientation.Vertical){
-            this._handler.classList.add('slider__handler_vertical');
-        }
+            let handler = document.createElement('div');
+            handler.classList.add('slider__handler');
+            handler.setAttribute('data-num-handle', String(i));
 
-        this._parentEl.appendChild(this._handler);
+            if (this._orientation === Orientation.Horizontal){
+                handler.classList.add('slider__handler_horizontal');
+            }else if (this._orientation === Orientation.Vertical){
+                handler.classList.add('slider__handler_vertical');
+            }
 
-        this.move(this._position);
+            this._parentEl.appendChild(handler);
+            this._handlers.push(handler);
+
+        });
+        this.move(this._positions);
+
+
     }
     public bindEvents()
     {
-        if (this._handler){
-            this._handler.addEventListener('mousedown', this._sliderEvents.onMouseDown);
+            this._handlers.map((v)=>{
+                v.addEventListener('mousedown', this._sliderEvents.onMouseDown);
+            });
             document.addEventListener('mouseup', this._sliderEvents.onMouseUp);
             document.addEventListener('mouseleave', this._sliderEvents.onMouseLeave);
             document.addEventListener('mousemove', this._sliderEvents.onMouseMove);
-        }
-
     }
     public getRect():ClientRect
     {

@@ -27,14 +27,33 @@ describe('Slider Model tests', ()=>{
             chai.expect(fn).to.throw();
         });
 
-        it('init value < min, val = min', ()=>{
-            let model = new SliderModel({min:2, max:9, value: 1});
-            chai.assert.equal(model.value, 2);
+        it('init handlers more than 2', ()=>{
+            let fn = function(){new SliderModel({min:0, max:9, values:[1, 3, 5]})};
+            chai.expect(fn).to.throw();
         });
 
-        it('init value > max, val = max', ()=>{
-            let model = new SliderModel({min:0, max:9, value: 10});
-            chai.assert.equal(model.value, 9);
+        it('init value of 1 handler > 2 handler', ()=>{
+            let fn = function(){new SliderModel({min:0, max:9, values:[4, 3]})};
+            chai.expect(fn).to.throw();
+        });
+
+        it('init value of 1 handler === 2 handler', ()=>{
+            let fn = function(){new SliderModel({min:0, max:9, values:[3, 3]})};
+            chai.expect(fn).to.throw();
+        });
+
+        it('init val1 < min', ()=>{
+            let fn = function(){new SliderModel({min:0, max:9, values:[-4]})};
+            chai.expect(fn).to.throw();
+        });
+        it('init val1 > max', ()=>{
+            let fn = function(){new SliderModel({min:0, max:9, values:[10]})};
+            chai.expect(fn).to.throw();
+        });
+
+        it('2 handlers, init val2 > max', ()=>{
+            let fn = function(){new SliderModel({min:0, max:9, values:[8, 10]})};
+            chai.expect(fn).to.throw();
         });
 
         it('diff max and min proportional steps', ()=>{
@@ -44,58 +63,112 @@ describe('Slider Model tests', ()=>{
     });
 
     describe('setValue calculation', ()=>{
-        it('single type, round to the nearest step up', ()=>{
-            let model = new SliderModel({min:0, max:9, step:3, type:Type.Single});
-            model.value = 5;
-            chai.assert.equal(model.value, 6);
+        it('round to the nearest step up', ()=>{
+            let model = new SliderModel({min:0, max:9, step:3});
+            model.values = [5];
+            chai.assert.equal(model.values[0], 6);
         });
-        it('single type, round to the nearest step down ', ()=>{
-            let model = new SliderModel({min:0, max:9, step:3, type:Type.Single});
-            model.value = 4;
-            chai.assert.equal(model.value, 3);
+        it('round to the nearest step down ', ()=>{
+            let model = new SliderModel({min:0, max:9, step:3});
+            model.values = [4];
+            chai.assert.equal(model.values[0], 3);
         });
-        it('single type, if less than min => return min', ()=>{
-            let model = new SliderModel({min:0, max:9, step:1, type:Type.Single});
-            model.value = -5;
-            chai.assert.equal(model.value, model.min);
+        it('if less than min => return min', ()=>{
+            let model = new SliderModel({min:0, max:9, step:1});
+            model.values = [-5];
+            chai.assert.equal(model.values[0], model.min);
         });
-        it('single type, if more than max => return max', ()=>{
-            let model = new SliderModel({min:0, max:9, step:1, type:Type.Single});
-            model.value = 10;
-            chai.assert.equal(model.value, model.max);
+        it('if more than max => return max', ()=>{
+            let model = new SliderModel({min:0, max:9, step:1});
+            model.values = [10];
+            chai.assert.equal(model.values[0], model.max);
+        });
+
+        it('2 handlers, left changed, now its equal right, put before right', ()=>{
+            let model = new SliderModel({min:0, max:9, step:1, values:[2, 4]});
+            model.values = [4, 4];
+            chai.expect(model.values).to.eql([3, 4]);
+        });
+
+        it('2 handlers, left changed, now its more than right, put before right', ()=>{
+            let model = new SliderModel({min:0, max:9, step:1, values:[2, 4]});
+            model.values = [5, 4];
+            chai.expect(model.values).to.eql([3, 4]);
+        });
+
+        it('2 handlers, right changed, now its equal left, put after left', ()=>{
+            let model = new SliderModel({min:0, max:9, step:1, values:[2, 4]});
+            model.values = [2, 2];
+            chai.expect(model.values).to.eql([2, 3]);
+        });
+
+        it('2 handlers, right changed, now its less than left, put after left', ()=>{
+            let model = new SliderModel({min:0, max:9, step:1, values:[2, 4]});
+            model.values = [2, 1];
+            chai.expect(model.values).to.eql([2, 3]);
+        });
+
+        it('2 handlers, both changed, left === right, exception', ()=>{
+            let model = new SliderModel({min:0, max:9, step:1, values:[2, 4]});
+            let fn = Object.getOwnPropertyDescriptor(SliderModel.prototype, 'values').set;
+            chai.expect(fn.bind([3, 3])).to.throw();
+        });
+
+        it('more than 2 handlers', ()=>{
+            let model = new SliderModel({min:0, max:9, values:[2, 4]});
+            let fn = Object.getOwnPropertyDescriptor(SliderModel.prototype, 'values').set;
+            chai.expect(fn.bind([1, 2, 3])).to.throw();
+        });
+
+        it('2 handlers, both changed, left > right, exception', ()=>{
+            let model = new SliderModel({min:0, max:9, step:1, values:[2, 4]});
+            let fn = Object.getOwnPropertyDescriptor(SliderModel.prototype, 'values').set;
+            chai.expect(fn.bind([5, 3])).to.throw();
+        });
+
+        it('2 handlers, both changed, left < min, exception', ()=>{
+            let model = new SliderModel({min:0, max:9, step:1, values:[2, 4]});
+            let fn = Object.getOwnPropertyDescriptor(SliderModel.prototype, 'values').set;
+            chai.expect(fn.bind([-1, 0])).to.throw();
+        });
+
+        it('2 handlers, both changed, right > max, exception', ()=>{
+            let model = new SliderModel({min:0, max:9, step:1, values:[2, 4]});
+            let fn = Object.getOwnPropertyDescriptor(SliderModel.prototype, 'values').set;
+            chai.expect(fn.bind([5, 10])).to.throw();
         });
 
     });
 
     describe('position', ()=>{
         it('convert view position to model value ', ()=>{
-            let model = new SliderModel({min:4, max:14, step:2, type:Type.Single});
-            model.position = 20;
-            chai.assert.equal(model.value, 6);
+            let model = new SliderModel({min:4, max:14, step:2});
+            model.positions = [20];
+            chai.assert.equal(model.values[0], 6);
         });
 
         it('convert model value to view position ', ()=>{
-            let model = new SliderModel({min:4, max:14, step:2, type:Type.Single});
-            model.value = 6;
-            chai.assert.equal(model.position, 20);
+            let model = new SliderModel({min:4, max:14, step:2});
+            model.values = [6];
+            chai.assert.equal(model.positions[0], 20);
         });
     });
 
     describe('move', ()=>{
         it('x = 30 set to 20', ()=>{
-            let model = new SliderModel({min:4, max:14, step:2, type:Type.Single});
-            model.move(10, 100, 30);
-            chai.assert.equal(model.position, 20);
+            let model = new SliderModel({min:4, max:14, step:2});
+            model.move(10, 100, 0, 30);
+            chai.assert.equal(model.positions[0], 20);
         });
         it('less than 0 set to min', ()=>{
             let model = new SliderModel({min:4, max:14, step:2, type:Type.Single});
-            model.move(10, 100, -10);
-            chai.assert.equal(model.position, 0);
+            model.move(10, 100, 0, -10);
+            chai.assert.equal(model.positions[0], 0);
         });
         it('more than 100 set to max', ()=>{
             let model = new SliderModel({min:4, max:14, step:2, type:Type.Single});
-            model.move(10, 100, 110);
-            chai.assert.equal(model.position, 100);
+            model.move(10, 100, 0, 110);
+            chai.assert.equal(model.positions[0], 100);
         });
     });
 
