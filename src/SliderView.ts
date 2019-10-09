@@ -8,6 +8,7 @@ class SliderView{
     private _positions:number[];
     private _parentEl:HTMLElement;
     private _handlers:HTMLElement[];
+    private _activeHandler:number|null;
     private _type: Type;
     private _sliderEvents: SliderEvents;
     constructor({showValue = false, orientation = interfaces.Orientation.Horizontal, type = Type.Single},
@@ -20,6 +21,7 @@ class SliderView{
         this._type = type;
         this._sliderEvents = sliderEvents;
         this._handlers = [];
+        this._activeHandler = null;
 
         this.create();
         this.bindEvents();
@@ -63,12 +65,12 @@ class SliderView{
     }
     public bindEvents()
     {
-            this._handlers.map((v)=>{
-                v.addEventListener('mousedown', this._sliderEvents.onMouseDown);
-            });
-            document.addEventListener('mouseup', this._sliderEvents.onMouseUp);
-            document.addEventListener('mouseleave', this._sliderEvents.onMouseLeave);
-            document.addEventListener('mousemove', this._sliderEvents.onMouseMove);
+        this._handlers.map((v)=>{
+            v.addEventListener('mousedown', this._sliderEvents.onMouseDown);
+        });
+        document.addEventListener('mouseup', this._sliderEvents.onMouseUp);
+        document.addEventListener('mouseleave', this._sliderEvents.onMouseLeave);
+        document.addEventListener('mousemove', this._sliderEvents.onMouseMove);
     }
     public getRect():ClientRect
     {
@@ -79,6 +81,13 @@ class SliderView{
         return this._orientation;
     }
 
+    public get activeHandler(){
+        return this._activeHandler;
+    }
+
+    public set activeHandler(val){
+        this._activeHandler = val;
+    }
 
 
 }

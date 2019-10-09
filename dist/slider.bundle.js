@@ -10714,35 +10714,31 @@ __webpack_require__.r(__webpack_exports__);
 
 var SliderController = /** @class */ (function () {
     function SliderController(node, options) {
-        this._activeHandler = null;
         this._model = new _SliderModel__WEBPACK_IMPORTED_MODULE_1__["SliderModel"](options);
         this._view = new _SliderView__WEBPACK_IMPORTED_MODULE_2__["SliderView"](options, this._model.steps, this._model.positions, node, {
+            onMouseMove: this.move.bind(this),
             onMouseDown: this.startMoving.bind(this),
             onMouseUp: this.endMoving.bind(this),
-            onMouseMove: this.move.bind(this),
-            onMouseLeave: this.leave.bind(this)
+            onMouseLeave: this.endMoving.bind(this)
         });
     }
-    SliderController.prototype.startMoving = function (e) {
-        this._activeHandler = Number(e.target.getAttribute('data-num-handle') || '0');
-    };
-    SliderController.prototype.endMoving = function () {
-        this._activeHandler = null;
-    };
     SliderController.prototype.move = function (e) {
-        if (this._activeHandler !== null) {
+        if (this._view.activeHandler !== null) {
             var rect = this._view.getRect();
             if (this._view.orientation === _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Horizontal) {
-                this._model.move(rect.left, rect.width, this._activeHandler, e.clientX);
+                this._model.move(rect.left, rect.width, this._view.activeHandler, e.clientX);
             }
             else if (this._view.orientation === _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Vertical) {
-                this._model.move(rect.top, rect.height, this._activeHandler, e.clientY);
+                this._model.move(rect.top, rect.height, this._view.activeHandler, e.clientY);
             }
             this._view.move(this._model.positions);
         }
     };
-    SliderController.prototype.leave = function () {
-        this._activeHandler = null;
+    SliderController.prototype.startMoving = function (e) {
+        this._view.activeHandler = Number(e.target.getAttribute('data-num-handle') || '0');
+    };
+    SliderController.prototype.endMoving = function () {
+        this._view.activeHandler = null;
     };
     return SliderController;
 }());
@@ -10958,6 +10954,7 @@ var SliderView = /** @class */ (function () {
         this._type = type;
         this._sliderEvents = sliderEvents;
         this._handlers = [];
+        this._activeHandler = null;
         this.create();
         this.bindEvents();
     }
@@ -11008,6 +11005,16 @@ var SliderView = /** @class */ (function () {
     Object.defineProperty(SliderView.prototype, "orientation", {
         get: function () {
             return this._orientation;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SliderView.prototype, "activeHandler", {
+        get: function () {
+            return this._activeHandler;
+        },
+        set: function (val) {
+            this._activeHandler = val;
         },
         enumerable: true,
         configurable: true
