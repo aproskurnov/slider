@@ -36,3 +36,13 @@
     width: 10px;
     height: 200px; }
 
+.interface {
+  display: flex;
+  flex-direction: column; }
+  .interface__block {
+    display: flex;
+    justify-content: space-between;
+    width: 250px; }
+  .interface__input {
+    text-align: center; }
+

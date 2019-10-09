@@ -14,7 +14,13 @@ class SliderModel{
         this._step = step;
         this._positions = [];
         this._values = [];
+        this._steps = 0;
 
+        this.prepareSlider();
+        this.prepareValues(values);
+
+    }
+    private prepareSlider(){
         if (this._max <= this._min){
             throw "min must be less than max";
         }
@@ -24,18 +30,18 @@ class SliderModel{
         }
 
         this._steps = (this._max - this._min)/this._step;
-
-        if (values.length){
-            this.values = values;
+    }
+    private prepareValues(val:number[]){
+        if (val.length){
+            this.values = val;
         }else{
             this.values = [Math.round((this._max - this._min)/2) + this._min];
         }
-
     }
-    public get values(){
+    public get values():number[]{
         return this._values;
     }
-    public set values(val){
+    public set values(val:number[]){
         let oldValues = this.values;
         let changedPos:number | null = null;
 
@@ -105,28 +111,48 @@ class SliderModel{
         }
 
         this._values = val;
-
-        this._positions = val.map((v)=>{
-            let stepsCur = (v - this._min)/this._step;
-            return 100/this._steps * stepsCur;
-        });
-
+        this._positions = this.calculatePositionsByValue(val);
 
     }
+    public setValue(val:number, pos:number){
+        let values = this.values.slice(0);
+        values[pos] = val;
+        this.values = values;
+    }
 
-    public get min(){
+    public get min():number{
         return this._min;
     }
-    public get max(){
+    public set min(val:number){
+        if (val > this._values[0]){
+            throw "min value must be less than left handler";
+        }
+        this._min = val;
+        this.prepareSlider();
+        let values = this.values;
+        this.clearValue();
+        this.prepareValues(values);
+    }
+    public get max():number{
         return this._max;
     }
-    public get steps(){
+    public set max(val:number){
+        if (val < this._values[this._values.length - 1]){
+            throw "min value must be more than right handler";
+        }
+        this._max = val;
+        this.prepareSlider();
+        let values = this.values;
+        this.clearValue();
+        this.prepareValues(values);
+    }
+    public get steps():number{
         return this._steps;
     }
-    public get positions(){
+    public get positions():number[]{
         return this._positions;
     }
-    public set positions(val){
+    public set positions(val:number[]){
         this.values = val.map((v)=>{
             let steps = v/(100/this._steps);
             let valInStep = (this._max - this._min)/this._steps;
@@ -146,6 +172,19 @@ class SliderModel{
         let fraction = val - (full * this._step + this._min);
         let round = Math.round(fraction/this._step);
         return this._min + full * this._step + round * this._step;
+    }
+
+    private calculatePositionsByValue(values:number[]):number[]
+    {
+        return values.map((v)=>{
+            let stepsCur = (v - this._min)/this._step;
+            return 100/this._steps * stepsCur;
+        });
+    }
+
+    private clearValue()
+    {
+        this._values = [];
     }
 
 }

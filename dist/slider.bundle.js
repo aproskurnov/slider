@@ -86,6 +86,17 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./examples/example1.scss":
+/*!********************************!*\
+  !*** ./examples/example1.scss ***!
+  \********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+// extracted by mini-css-extract-plugin
+
+/***/ }),
+
 /***/ "./node_modules/jquery/dist/jquery.js":
 /*!********************************************!*\
   !*** ./node_modules/jquery/dist/jquery.js ***!
@@ -10721,6 +10732,12 @@ var SliderController = /** @class */ (function () {
             onMouseUp: this.endMoving.bind(this),
             onMouseLeave: this.endMoving.bind(this)
         });
+        if (options.callbacks) {
+            this._callbacks = options.callbacks;
+        }
+        else {
+            this._callbacks = {};
+        }
     }
     SliderController.prototype.move = function (e) {
         e.preventDefault();
@@ -10733,6 +10750,9 @@ var SliderController = /** @class */ (function () {
                 this._model.move(rect.top, rect.height, this._view.activeHandler, e.clientY);
             }
             this._view.move(this._model.positions, this._model.values);
+            if (this._callbacks.onMove) {
+                this._callbacks.onMove(this._model.values);
+            }
         }
     };
     SliderController.prototype.startMoving = function (e) {
@@ -10742,6 +10762,49 @@ var SliderController = /** @class */ (function () {
     SliderController.prototype.endMoving = function (e) {
         e.preventDefault();
         this._view.activeHandler = null;
+    };
+    Object.defineProperty(SliderController.prototype, "min", {
+        get: function () {
+            return this._model.min;
+        },
+        set: function (val) {
+            this._model.min = val;
+            this._view.move(this._model.positions, this._model.values);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SliderController.prototype, "max", {
+        get: function () {
+            return this._model.max;
+        },
+        set: function (val) {
+            this._model.max = val;
+            this._view.move(this._model.positions, this._model.values);
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SliderController.prototype, "tooltip", {
+        get: function () {
+            return this._view.tooltip;
+        },
+        set: function (val) {
+            this._view.tooltip = val;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(SliderController.prototype, "values", {
+        get: function () {
+            return this._model.values;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    SliderController.prototype.setValue = function (val, pos) {
+        this._model.setValue(val, pos);
+        this._view.move(this._model.positions, this._model.values);
     };
     return SliderController;
 }());
@@ -10768,6 +10831,11 @@ var SliderModel = /** @class */ (function () {
         this._step = step;
         this._positions = [];
         this._values = [];
+        this._steps = 0;
+        this.prepareSlider();
+        this.prepareValues(values);
+    }
+    SliderModel.prototype.prepareSlider = function () {
         if (this._max <= this._min) {
             throw "min must be less than max";
         }
@@ -10776,13 +10844,15 @@ var SliderModel = /** @class */ (function () {
             this._max = this._max + fraction;
         }
         this._steps = (this._max - this._min) / this._step;
-        if (values.length) {
-            this.values = values;
+    };
+    SliderModel.prototype.prepareValues = function (val) {
+        if (val.length) {
+            this.values = val;
         }
         else {
             this.values = [Math.round((this._max - this._min) / 2) + this._min];
         }
-    }
+    };
     Object.defineProperty(SliderModel.prototype, "values", {
         get: function () {
             return this._values;
@@ -10855,17 +10925,29 @@ var SliderModel = /** @class */ (function () {
                 });
             }
             this._values = val;
-            this._positions = val.map(function (v) {
-                var stepsCur = (v - _this._min) / _this._step;
-                return 100 / _this._steps * stepsCur;
-            });
+            this._positions = this.calculatePositionsByValue(val);
         },
         enumerable: true,
         configurable: true
     });
+    SliderModel.prototype.setValue = function (val, pos) {
+        var values = this.values.slice(0);
+        values[pos] = val;
+        this.values = values;
+    };
     Object.defineProperty(SliderModel.prototype, "min", {
         get: function () {
             return this._min;
+        },
+        set: function (val) {
+            if (val > this._values[0]) {
+                throw "min value must be less than left handler";
+            }
+            this._min = val;
+            this.prepareSlider();
+            var values = this.values;
+            this.clearValue();
+            this.prepareValues(values);
         },
         enumerable: true,
         configurable: true
@@ -10873,6 +10955,16 @@ var SliderModel = /** @class */ (function () {
     Object.defineProperty(SliderModel.prototype, "max", {
         get: function () {
             return this._max;
+        },
+        set: function (val) {
+            if (val < this._values[this._values.length - 1]) {
+                throw "min value must be more than right handler";
+            }
+            this._max = val;
+            this.prepareSlider();
+            var values = this.values;
+            this.clearValue();
+            this.prepareValues(values);
         },
         enumerable: true,
         configurable: true
@@ -10911,6 +11003,16 @@ var SliderModel = /** @class */ (function () {
         var round = Math.round(fraction / this._step);
         return this._min + full * this._step + round * this._step;
     };
+    SliderModel.prototype.calculatePositionsByValue = function (values) {
+        var _this = this;
+        return values.map(function (v) {
+            var stepsCur = (v - _this._min) / _this._step;
+            return 100 / _this._steps * stepsCur;
+        });
+    };
+    SliderModel.prototype.clearValue = function () {
+        this._values = [];
+    };
     return SliderModel;
 }());
 
@@ -10929,7 +11031,6 @@ var SliderModel = /** @class */ (function () {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SliderView", function() { return SliderView; });
 /* harmony import */ var _interfaces__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./interfaces */ "./src/interfaces.ts");
-
 
 var SliderView = /** @class */ (function () {
     function SliderView(_a, values, positions, parentEl, sliderEvents) {
@@ -11035,6 +11136,28 @@ var SliderView = /** @class */ (function () {
             }
         });
     };
+    Object.defineProperty(SliderView.prototype, "tooltip", {
+        get: function () {
+            return this._tooltip;
+        },
+        set: function (val) {
+            if (this._tooltip !== val) {
+                if (val) {
+                    this._handlers.map(function (v) {
+                        v.tooltip.classList.add('slider__tooltip_showed');
+                    });
+                }
+                else {
+                    this._handlers.map(function (v) {
+                        v.tooltip.classList.remove('slider__tooltip_showed');
+                    });
+                }
+                this._tooltip = val;
+            }
+        },
+        enumerable: true,
+        configurable: true
+    });
     return SliderView;
 }());
 
@@ -11083,8 +11206,11 @@ var Orientation;
 __webpack_require__.r(__webpack_exports__);
 /* WEBPACK VAR INJECTION */(function(jQuery, $) {/* harmony import */ var _slider_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./slider.scss */ "./src/slider.scss");
 /* harmony import */ var _slider_scss__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_slider_scss__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _interfaces__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./interfaces */ "./src/interfaces.ts");
-/* harmony import */ var _SliderController__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./SliderController */ "./src/SliderController.ts");
+/* harmony import */ var _examples_example1_scss__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../examples/example1.scss */ "./examples/example1.scss");
+/* harmony import */ var _examples_example1_scss__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_examples_example1_scss__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _interfaces__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./interfaces */ "./src/interfaces.ts");
+/* harmony import */ var _SliderController__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./SliderController */ "./src/SliderController.ts");
+
 
 
 
@@ -11092,15 +11218,158 @@ __webpack_require__.r(__webpack_exports__);
     $.fn.slider = function (options) {
         return this.each(function () {
             if (!$.data(this, "slider")) {
-                $.data(this, "slider", new _SliderController__WEBPACK_IMPORTED_MODULE_2__["SliderController"](this, options));
+                $.data(this, "slider", new _SliderController__WEBPACK_IMPORTED_MODULE_3__["SliderController"](this, options));
             }
         });
     };
 }(jQuery));
-$('.test1').slider({ min: -10000, max: 30000, values: [20000], step: 1000, tooltip: true });
-$('.test2').slider({ min: 4, max: 14, values: [8] });
-$('.test3').slider({ min: 0, max: 10, values: [2, 5], tooltip: true });
-$('.test4').slider({ min: -10, max: 5, values: [0, 3], orientation: _interfaces__WEBPACK_IMPORTED_MODULE_1__["Orientation"].Vertical, tooltip: true });
+try {
+    var min = $('#min1');
+    var max = $('#max1');
+    var val1_1 = $('#value1_1');
+    var tooltip = $('#tooltip1');
+    var slider = $('.slider1').slider({
+        min: -10000, max: 30000, values: [20000], step: 1000, tooltip: true,
+        callbacks: { onMove: function (val) {
+                val1_1.val(val[0]);
+            } }
+    });
+    fillInterface({
+        slider: slider,
+        min: min,
+        max: max,
+        val1: val1_1,
+        tooltip: tooltip
+    });
+}
+catch (e) {
+    alert("slider1 error: " + e);
+}
+try {
+    var min = $('#min2');
+    var max = $('#max2');
+    var val1_2 = $('#value2_1');
+    var tooltip = $('#tooltip2');
+    var slider = $('.slider2').slider({
+        min: 4, max: 14, values: [8],
+        callbacks: { onMove: function (val) {
+                val1_2.val(val[0]);
+            } }
+    });
+    fillInterface({
+        slider: slider,
+        min: min,
+        max: max,
+        val1: val1_2,
+        tooltip: tooltip
+    });
+}
+catch (e) {
+    alert("slider2 error: " + e);
+}
+try {
+    var min = $('#min3');
+    var max = $('#max3');
+    var val1_3 = $('#value3_1');
+    var val2_1 = $('#value3_2');
+    var tooltip = $('#tooltip3');
+    var slider = $('.slider3').slider({
+        min: 0, max: 10, values: [2, 5], tooltip: true,
+        callbacks: { onMove: function (val) {
+                val1_3.val(val[0]);
+                val2_1.val(val[1]);
+            } }
+    });
+    fillInterface({
+        slider: slider,
+        min: min,
+        max: max,
+        val1: val1_3,
+        val2: val2_1,
+        tooltip: tooltip
+    });
+}
+catch (e) {
+    alert("slider3 error: " + e);
+}
+try {
+    var min = $('#min4');
+    var max = $('#max4');
+    var val1_4 = $('#value4_1');
+    var val2_2 = $('#value4_2');
+    var tooltip = $('#tooltip4');
+    var slider = $('.slider4').slider({
+        min: -10, max: 5, values: [0, 3], orientation: _interfaces__WEBPACK_IMPORTED_MODULE_2__["Orientation"].Vertical, tooltip: true,
+        callbacks: { onMove: function (val) {
+                val1_4.val(val[0]);
+                val2_2.val(val[1]);
+            } }
+    });
+    fillInterface({
+        slider: slider,
+        min: min,
+        max: max,
+        val1: val1_4,
+        val2: val2_2,
+        tooltip: tooltip
+    });
+}
+catch (e) {
+    alert("slider4 error: " + e);
+}
+function fillInterface(data) {
+    data.min.val(data.slider.data('slider').min);
+    data.max.val(data.slider.data('slider').max);
+    data.val1.val(data.slider.data('slider').values[0]);
+    data.tooltip.prop('checked', (data.slider.data('slider').tooltip));
+    data.min.on('blur', null, function () {
+        var el = this;
+        try {
+            data.slider.data('slider').min = Number(el.value);
+        }
+        catch (e) {
+            alert("error: " + e);
+            el.value = (data.slider.data('slider').min);
+        }
+    });
+    data.max.on('blur', null, function () {
+        var el = this;
+        try {
+            data.slider.data('slider').max = Number(el.value);
+        }
+        catch (e) {
+            alert("error: " + e);
+            el.value = (data.slider.data('slider').max);
+        }
+    });
+    data.val1.on('blur', null, function () {
+        var el = this;
+        try {
+            data.slider.data('slider').setValue(Number(el.value), 0);
+        }
+        catch (e) {
+            alert("error: " + e);
+        }
+        el.value = (data.slider.data('slider').values[0]);
+    });
+    if (data.val2) {
+        data.val2.on('blur', null, function () {
+            var el = this;
+            try {
+                data.slider.data('slider').setValue(Number(el.value), 1);
+            }
+            catch (e) {
+                alert("error: " + e);
+            }
+            el.value = (data.slider.data('slider').values[1]);
+        });
+        data.val2.val(data.slider.data('slider').values[1]);
+    }
+    data.tooltip.on('change', null, function () {
+        var el = this;
+        data.slider.data('slider').tooltip = el.checked;
+    });
+}
 
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js"), __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js")))
 

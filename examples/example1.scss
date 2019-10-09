@@ -1,0 +1,12 @@
+.interface{
+  display: flex;
+  flex-direction: column;
+  &__block{
+    display: flex;
+    justify-content: space-between;
+    width: 250px;
+  }
+  &__input{
+    text-align: center;
+  }
+}

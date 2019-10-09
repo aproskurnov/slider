@@ -9,7 +9,8 @@ export interface Options {
     step?: number,
     tooltip?: boolean,
     orientation?: Orientation,
-    values?: number[]
+    values?: number[],
+    callbacks?:Callbacks
 }
 
 export interface SliderEvents {
@@ -22,4 +23,8 @@ export interface SliderEvents {
 export interface Handler {
     handler: HTMLElement,
     tooltip: HTMLElement
+}
+
+export interface Callbacks {
+    onMove?(val:number[]):void
 }

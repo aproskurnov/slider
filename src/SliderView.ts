@@ -1,16 +1,15 @@
-import * as interfaces from "./interfaces";
 import {Orientation, SliderEvents, Handler} from "./interfaces";
 
 class SliderView{
     private _tooltip:boolean;
-    private _orientation:interfaces.Orientation;
+    private _orientation:Orientation;
     private _positions:number[];
     private _values: number[];
     private _parentEl:HTMLElement;
     private _handlers:Handler[];
     private _activeHandler:number|null;
     private _sliderEvents: SliderEvents;
-    constructor({tooltip = false, orientation = interfaces.Orientation.Horizontal},
+    constructor({tooltip = false, orientation = Orientation.Horizontal},
                 values:number[], positions:number[], parentEl:HTMLElement, sliderEvents: SliderEvents){
         this._tooltip = tooltip;
         this._orientation = orientation;
@@ -99,15 +98,15 @@ class SliderView{
         return this._parentEl.getBoundingClientRect();
     }
 
-    public get orientation(){
+    public get orientation():Orientation{
         return this._orientation;
     }
 
-    public get activeHandler(){
+    public get activeHandler():number|null{
         return this._activeHandler;
     }
 
-    public set activeHandler(val){
+    public set activeHandler(val:number|null){
         this._activeHandler = val;
     }
 
@@ -120,6 +119,24 @@ class SliderView{
         });
     }
 
+    public get tooltip():boolean{
+        return this._tooltip;
+    }
+
+    public set tooltip(val:boolean){
+        if (this._tooltip !== val){
+            if (val){
+                this._handlers.map((v)=>{
+                    v.tooltip.classList.add('slider__tooltip_showed')
+                });
+            }else{
+                this._handlers.map((v)=>{
+                    v.tooltip.classList.remove('slider__tooltip_showed')
+                });
+            }
+            this._tooltip = val;
+        }
+    }
 
 }
 
