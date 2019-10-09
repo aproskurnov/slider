@@ -13,41 +13,41 @@ describe('Test test config', () => {
 describe('Slider Model tests', ()=>{
     describe('verify init params', ()=>{
         it('init max < min', ()=>{
-            let fn = function(){new SliderModel({min:10, max:9})};
+            let fn = ()=>{new SliderModel({min:10, max:9})};
             chai.expect(fn).to.throw();
         });
 
         it('default max < min', ()=>{
-            let fn = function(){new SliderModel({max:-5})};
+            let fn = ()=>{new SliderModel({max:-5})};
             chai.expect(fn).to.throw();
         });
 
         it('max == min', ()=>{
-            let fn = function(){new SliderModel({min:10, max:10})};
+            let fn = ()=>{new SliderModel({min:10, max:10})};
             chai.expect(fn).to.throw();
         });
 
         it('init handlers more than 2', ()=>{
-            let fn = function(){new SliderModel({min:0, max:9, values:[1, 3, 5]})};
+            let fn = ()=>{new SliderModel({min:0, max:9, values:[1, 3, 5]})};
             chai.expect(fn).to.throw();
         });
 
         it('init value of 1 handler > 2 handler', ()=>{
-            let fn = function(){new SliderModel({min:0, max:9, values:[4, 3]})};
+            let fn = ()=>{new SliderModel({min:0, max:9, values:[4, 3]})};
             chai.expect(fn).to.throw();
         });
 
         it('init value of 1 handler === 2 handler', ()=>{
-            let fn = function(){new SliderModel({min:0, max:9, values:[3, 3]})};
+            let fn = ()=>{new SliderModel({min:0, max:9, values:[3, 3]})};
             chai.expect(fn).to.throw();
         });
 
         it('init val1 < min', ()=>{
-            let fn = function(){new SliderModel({min:0, max:9, values:[-4]})};
+            let fn = ()=>{new SliderModel({min:0, max:9, values:[-4]})};
             chai.expect(fn).to.throw();
         });
         it('init val1 > max', ()=>{
-            let fn = function(){new SliderModel({min:0, max:9, values:[10]})};
+            let fn = ()=>{new SliderModel({min:0, max:9, values:[10]})};
             chai.expect(fn).to.throw();
         });
 
@@ -110,32 +110,27 @@ describe('Slider Model tests', ()=>{
 
         it('2 handlers, both changed, left === right, exception', ()=>{
             let model = new SliderModel({min:0, max:9, step:1, values:[2, 4]});
-            let fn = Object.getOwnPropertyDescriptor(SliderModel.prototype, 'values').set;
-            chai.expect(fn.bind([3, 3])).to.throw();
+            chai.expect(()=>{model.values = [3, 3];}).to.throw();
         });
 
         it('more than 2 handlers', ()=>{
             let model = new SliderModel({min:0, max:9, values:[2, 4]});
-            let fn = Object.getOwnPropertyDescriptor(SliderModel.prototype, 'values').set;
-            chai.expect(fn.bind([1, 2, 3])).to.throw();
+            chai.expect(()=>{model.values = [1, 2, 3]}).to.throw();
         });
 
         it('2 handlers, both changed, left > right, exception', ()=>{
             let model = new SliderModel({min:0, max:9, step:1, values:[2, 4]});
-            let fn = Object.getOwnPropertyDescriptor(SliderModel.prototype, 'values').set;
-            chai.expect(fn.bind([5, 3])).to.throw();
+            chai.expect(()=>{model.values = [5, 3]}).to.throw();
         });
 
         it('2 handlers, both changed, left < min, exception', ()=>{
             let model = new SliderModel({min:0, max:9, step:1, values:[2, 4]});
-            let fn = Object.getOwnPropertyDescriptor(SliderModel.prototype, 'values').set;
-            chai.expect(fn.bind([-1, 0])).to.throw();
+            chai.expect(()=>{model.values = [-1, 0]}).to.throw();
         });
 
         it('2 handlers, both changed, right > max, exception', ()=>{
             let model = new SliderModel({min:0, max:9, step:1, values:[2, 4]});
-            let fn = Object.getOwnPropertyDescriptor(SliderModel.prototype, 'values').set;
-            chai.expect(fn.bind([5, 10])).to.throw();
+            chai.expect(()=>{model.values = [5, 10]}).to.throw();
         });
 
     });
