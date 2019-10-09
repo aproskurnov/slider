@@ -13,7 +13,7 @@ class SliderModel{
         this._max = max;
         this._step = step;
         this._positions = [];
-        this._values = [this._min];
+        this._values = [];
 
         if (this._max <= this._min){
             throw "min must be less than max";
@@ -26,25 +26,6 @@ class SliderModel{
         this._steps = (this._max - this._min)/this._step;
 
         if (values.length){
-            if (values.length > 2){
-                throw "count values must be less or equal 2";
-            }
-
-            values.reduce((left, current)=>{
-                if (left >= current){
-                    throw "left must be less than right";
-                }
-                return current;
-            });
-
-            if (values[0] < this._min){
-                throw "values must be in range min <=> max ";
-            }
-
-            if (values[values.length - 1] > this._max){
-                throw "values must be in range min <=> max ";
-            }
-
             this.values = values;
         }else{
             this.values = [Math.round((this._max - this._min)/2) + this._min];
@@ -55,10 +36,6 @@ class SliderModel{
         return this._values;
     }
     public set values(val){
-        if (val.length > 2){
-            throw "count values must be less or equal 2";
-        }
-
         let oldValues = this.values;
         let changedPos:number | null = null;
 
@@ -79,6 +56,10 @@ class SliderModel{
         }
 
         if (changeMoreThanOne){
+            if (val.length > 2){
+                throw "count values must be less or equal 2";
+            }
+
             val.reduce((left, current)=>{
                 if (left >= current){
                     throw "left must be less than right";

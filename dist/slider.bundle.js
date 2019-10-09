@@ -10764,7 +10764,7 @@ var SliderModel = /** @class */ (function () {
         this._max = max;
         this._step = step;
         this._positions = [];
-        this._values = [this._min];
+        this._values = [];
         if (this._max <= this._min) {
             throw "min must be less than max";
         }
@@ -10774,21 +10774,6 @@ var SliderModel = /** @class */ (function () {
         }
         this._steps = (this._max - this._min) / this._step;
         if (values.length) {
-            if (values.length > 2) {
-                throw "count values must be less or equal 2";
-            }
-            values.reduce(function (left, current) {
-                if (left >= current) {
-                    throw "left must be less than right";
-                }
-                return current;
-            });
-            if (values[0] < this._min) {
-                throw "values must be in range min <=> max ";
-            }
-            if (values[values.length - 1] > this._max) {
-                throw "values must be in range min <=> max ";
-            }
             this.values = values;
         }
         else {
@@ -10801,9 +10786,6 @@ var SliderModel = /** @class */ (function () {
         },
         set: function (val) {
             var _this = this;
-            if (val.length > 2) {
-                throw "count values must be less or equal 2";
-            }
             var oldValues = this.values;
             var changedPos = null;
             var changeMoreThanOne = false;
@@ -10823,6 +10805,9 @@ var SliderModel = /** @class */ (function () {
                 });
             }
             if (changeMoreThanOne) {
+                if (val.length > 2) {
+                    throw "count values must be less or equal 2";
+                }
                 val.reduce(function (left, current) {
                     if (left >= current) {
                         throw "left must be less than right";
