@@ -7,7 +7,7 @@ class SliderModel{
     private _values:number[];
     private _positions:number[];
     private _steps:number;
-    constructor({min=0, max=9, step=1, values}:Options) {
+    constructor({min=0, max=9, step=1, values=[]}:Options) {
 
         this._min = min;
         this._max = max;
@@ -25,7 +25,7 @@ class SliderModel{
 
         this._steps = (this._max - this._min)/this._step;
 
-        if (values && values.length){
+        if (values.length){
             if (values.length > 2){
                 throw "count values must be less or equal 2";
             }

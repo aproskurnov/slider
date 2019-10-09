@@ -10763,7 +10763,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "SliderModel", function() { return SliderModel; });
 var SliderModel = /** @class */ (function () {
     function SliderModel(_a) {
-        var _b = _a.min, min = _b === void 0 ? 0 : _b, _c = _a.max, max = _c === void 0 ? 9 : _c, _d = _a.step, step = _d === void 0 ? 1 : _d, values = _a.values;
+        var _b = _a.min, min = _b === void 0 ? 0 : _b, _c = _a.max, max = _c === void 0 ? 9 : _c, _d = _a.step, step = _d === void 0 ? 1 : _d, _e = _a.values, values = _e === void 0 ? [] : _e;
         this._min = min;
         this._max = max;
         this._step = step;
@@ -10777,7 +10777,7 @@ var SliderModel = /** @class */ (function () {
             this._max = this._max + fraction;
         }
         this._steps = (this._max - this._min) / this._step;
-        if (values && values.length) {
+        if (values.length) {
             if (values.length > 2) {
                 throw "count values must be less or equal 2";
             }
