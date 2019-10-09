@@ -1,24 +1,22 @@
 import * as interfaces from "./interfaces";
-import {Orientation, SliderEvents, Type} from "./interfaces";
+import {Orientation, SliderEvents, Handler} from "./interfaces";
 
 class SliderView{
-    private _showValue:boolean;
+    private _tooltip:boolean;
     private _orientation:interfaces.Orientation;
-    private _steps:number;
     private _positions:number[];
+    private _values: number[];
     private _parentEl:HTMLElement;
-    private _handlers:HTMLElement[];
+    private _handlers:Handler[];
     private _activeHandler:number|null;
-    private _type: Type;
     private _sliderEvents: SliderEvents;
-    constructor({showValue = false, orientation = interfaces.Orientation.Horizontal, type = Type.Single},
-                steps:number, positions:number[], parentEl:HTMLElement, sliderEvents: SliderEvents){
-        this._showValue = showValue;
+    constructor({tooltip = false, orientation = interfaces.Orientation.Horizontal},
+                values:number[], positions:number[], parentEl:HTMLElement, sliderEvents: SliderEvents){
+        this._tooltip = tooltip;
         this._orientation = orientation;
-        this._steps = steps;
         this._positions = positions;
+        this._values = values;
         this._parentEl = parentEl;
-        this._type = type;
         this._sliderEvents = sliderEvents;
         this._handlers = [];
         this._activeHandler = null;
@@ -26,12 +24,18 @@ class SliderView{
         this.create();
         this.bindEvents();
     }
-    public move(positions:number[])
+    public move(positions:number[], values:number[])
     {
         if (this._orientation === Orientation.Horizontal){
-            this._handlers.map((v, i)=>{v.style.left = positions[i] + '%'});
+            this._handlers.map((v, i)=>{
+                v.handler.style.left = positions[i] + '%';
+                v.tooltip.innerHTML = String(values[i]);
+            });
         }else if (this._orientation === Orientation.Vertical){
-            this._handlers.map((v, i)=>{v.style.top = positions[i] + '%'});
+            this._handlers.map((v, i)=>{
+                v.handler.style.top = positions[i] + '%';
+                v.tooltip.innerHTML = String(values[i]);
+            });
         }
     }
     public create(){
@@ -47,7 +51,6 @@ class SliderView{
 
             let handler = document.createElement('div');
             handler.classList.add('slider__handler');
-            handler.setAttribute('data-num-handle', String(i));
 
             if (this._orientation === Orientation.Horizontal){
                 handler.classList.add('slider__handler_horizontal');
@@ -55,18 +58,37 @@ class SliderView{
                 handler.classList.add('slider__handler_vertical');
             }
 
+            let tooltip = document.createElement('div');
+            tooltip.classList.add('slider__tooltip');
+            tooltip.innerHTML = String(this._values[i]);
+
+            if (this._orientation === Orientation.Horizontal){
+                tooltip.classList.add('slider__tooltip_horizontal');
+            }else if (this._orientation === Orientation.Vertical){
+                tooltip.classList.add('slider__tooltip_vertical');
+            }
+
+            handler.appendChild(tooltip);
+
+            if (this._tooltip){
+                tooltip.classList.add('slider__tooltip_showed');
+            }
+
             this._parentEl.appendChild(handler);
-            this._handlers.push(handler);
+            this._handlers.push({
+                handler:handler,
+                tooltip:tooltip
+            });
 
         });
-        this.move(this._positions);
+        this.move(this._positions, this._values);
 
 
     }
     public bindEvents()
     {
         this._handlers.map((v)=>{
-            v.addEventListener('mousedown', this._sliderEvents.onMouseDown);
+            v.handler.addEventListener('mousedown', this._sliderEvents.onMouseDown);
         });
         document.addEventListener('mouseup', this._sliderEvents.onMouseUp);
         document.addEventListener('mouseleave', this._sliderEvents.onMouseLeave);
@@ -87,6 +109,15 @@ class SliderView{
 
     public set activeHandler(val){
         this._activeHandler = val;
+    }
+
+    public setActiveHandler(el:HTMLElement)
+    {
+        this._handlers.map((v, i)=>{
+            if (v.handler === el){
+                this.activeHandler = i;
+            }
+        });
     }
 
 

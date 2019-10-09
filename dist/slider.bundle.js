@@ -10715,7 +10715,7 @@ __webpack_require__.r(__webpack_exports__);
 var SliderController = /** @class */ (function () {
     function SliderController(node, options) {
         this._model = new _SliderModel__WEBPACK_IMPORTED_MODULE_1__["SliderModel"](options);
-        this._view = new _SliderView__WEBPACK_IMPORTED_MODULE_2__["SliderView"](options, this._model.steps, this._model.positions, node, {
+        this._view = new _SliderView__WEBPACK_IMPORTED_MODULE_2__["SliderView"](options, this._model.values, this._model.positions, node, {
             onMouseMove: this.move.bind(this),
             onMouseDown: this.startMoving.bind(this),
             onMouseUp: this.endMoving.bind(this),
@@ -10723,6 +10723,7 @@ var SliderController = /** @class */ (function () {
         });
     }
     SliderController.prototype.move = function (e) {
+        e.preventDefault();
         if (this._view.activeHandler !== null) {
             var rect = this._view.getRect();
             if (this._view.orientation === _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Horizontal) {
@@ -10731,13 +10732,15 @@ var SliderController = /** @class */ (function () {
             else if (this._view.orientation === _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Vertical) {
                 this._model.move(rect.top, rect.height, this._view.activeHandler, e.clientY);
             }
-            this._view.move(this._model.positions);
+            this._view.move(this._model.positions, this._model.values);
         }
     };
     SliderController.prototype.startMoving = function (e) {
-        this._view.activeHandler = Number(e.target.getAttribute('data-num-handle') || '0');
+        e.preventDefault();
+        this._view.setActiveHandler(e.target);
     };
-    SliderController.prototype.endMoving = function () {
+    SliderController.prototype.endMoving = function (e) {
+        e.preventDefault();
         this._view.activeHandler = null;
     };
     return SliderController;
@@ -10929,26 +10932,31 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var SliderView = /** @class */ (function () {
-    function SliderView(_a, steps, positions, parentEl, sliderEvents) {
-        var _b = _a.showValue, showValue = _b === void 0 ? false : _b, _c = _a.orientation, orientation = _c === void 0 ? _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Horizontal : _c, _d = _a.type, type = _d === void 0 ? _interfaces__WEBPACK_IMPORTED_MODULE_0__["Type"].Single : _d;
-        this._showValue = showValue;
+    function SliderView(_a, values, positions, parentEl, sliderEvents) {
+        var _b = _a.tooltip, tooltip = _b === void 0 ? false : _b, _c = _a.orientation, orientation = _c === void 0 ? _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Horizontal : _c;
+        this._tooltip = tooltip;
         this._orientation = orientation;
-        this._steps = steps;
         this._positions = positions;
+        this._values = values;
         this._parentEl = parentEl;
-        this._type = type;
         this._sliderEvents = sliderEvents;
         this._handlers = [];
         this._activeHandler = null;
         this.create();
         this.bindEvents();
     }
-    SliderView.prototype.move = function (positions) {
+    SliderView.prototype.move = function (positions, values) {
         if (this._orientation === _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Horizontal) {
-            this._handlers.map(function (v, i) { v.style.left = positions[i] + '%'; });
+            this._handlers.map(function (v, i) {
+                v.handler.style.left = positions[i] + '%';
+                v.tooltip.innerHTML = String(values[i]);
+            });
         }
         else if (this._orientation === _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Vertical) {
-            this._handlers.map(function (v, i) { v.style.top = positions[i] + '%'; });
+            this._handlers.map(function (v, i) {
+                v.handler.style.top = positions[i] + '%';
+                v.tooltip.innerHTML = String(values[i]);
+            });
         }
     };
     SliderView.prototype.create = function () {
@@ -10963,22 +10971,37 @@ var SliderView = /** @class */ (function () {
         this._positions.map(function (v, i) {
             var handler = document.createElement('div');
             handler.classList.add('slider__handler');
-            handler.setAttribute('data-num-handle', String(i));
             if (_this._orientation === _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Horizontal) {
                 handler.classList.add('slider__handler_horizontal');
             }
             else if (_this._orientation === _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Vertical) {
                 handler.classList.add('slider__handler_vertical');
             }
+            var tooltip = document.createElement('div');
+            tooltip.classList.add('slider__tooltip');
+            tooltip.innerHTML = String(_this._values[i]);
+            if (_this._orientation === _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Horizontal) {
+                tooltip.classList.add('slider__tooltip_horizontal');
+            }
+            else if (_this._orientation === _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Vertical) {
+                tooltip.classList.add('slider__tooltip_vertical');
+            }
+            handler.appendChild(tooltip);
+            if (_this._tooltip) {
+                tooltip.classList.add('slider__tooltip_showed');
+            }
             _this._parentEl.appendChild(handler);
-            _this._handlers.push(handler);
+            _this._handlers.push({
+                handler: handler,
+                tooltip: tooltip
+            });
         });
-        this.move(this._positions);
+        this.move(this._positions, this._values);
     };
     SliderView.prototype.bindEvents = function () {
         var _this = this;
         this._handlers.map(function (v) {
-            v.addEventListener('mousedown', _this._sliderEvents.onMouseDown);
+            v.handler.addEventListener('mousedown', _this._sliderEvents.onMouseDown);
         });
         document.addEventListener('mouseup', this._sliderEvents.onMouseUp);
         document.addEventListener('mouseleave', this._sliderEvents.onMouseLeave);
@@ -11004,6 +11027,14 @@ var SliderView = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    SliderView.prototype.setActiveHandler = function (el) {
+        var _this = this;
+        this._handlers.map(function (v, i) {
+            if (v.handler === el) {
+                _this.activeHandler = i;
+            }
+        });
+    };
     return SliderView;
 }());
 
@@ -11015,23 +11046,17 @@ var SliderView = /** @class */ (function () {
 /*!***************************!*\
   !*** ./src/interfaces.ts ***!
   \***************************/
-/*! exports provided: Orientation, Type */
+/*! exports provided: Orientation */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Orientation", function() { return Orientation; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Type", function() { return Type; });
 var Orientation;
 (function (Orientation) {
     Orientation[Orientation["Vertical"] = 0] = "Vertical";
     Orientation[Orientation["Horizontal"] = 1] = "Horizontal";
 })(Orientation || (Orientation = {}));
-var Type;
-(function (Type) {
-    Type[Type["Single"] = 0] = "Single";
-    Type[Type["Range"] = 1] = "Range";
-})(Type || (Type = {}));
 
 
 /***/ }),
@@ -11072,10 +11097,10 @@ __webpack_require__.r(__webpack_exports__);
         });
     };
 }(jQuery));
-$('.test1').slider({});
+$('.test1').slider({ min: -10000, max: 30000, values: [20000], step: 1000, tooltip: true });
 $('.test2').slider({ min: 4, max: 14, values: [8] });
-$('.test3').slider({ min: 0, max: 10, values: [2, 5] });
-$('.test4').slider({ min: -10, max: 5, values: [0, 3], orientation: _interfaces__WEBPACK_IMPORTED_MODULE_1__["Orientation"].Vertical });
+$('.test3').slider({ min: 0, max: 10, values: [2, 5], tooltip: true });
+$('.test4').slider({ min: -10, max: 5, values: [0, 3], orientation: _interfaces__WEBPACK_IMPORTED_MODULE_1__["Orientation"].Vertical, tooltip: true });
 
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js"), __webpack_require__(/*! jquery */ "./node_modules/jquery/dist/jquery.js")))
 

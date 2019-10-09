@@ -1,7 +1,7 @@
 .slider{
   position: relative;
   border: 1px solid;
-  margin: 20px 20px;
+  margin: 30px 20px;
   &__handler{
     position: absolute;
     width: 20px;
@@ -16,6 +16,26 @@
     &_vertical{
       left: -5px;
       transform: translate(0px, -10px);
+    }
+  }
+  &__tooltip{
+    position: absolute;
+    display: none;
+    padding: 1px 8px;
+    border: 1px solid;
+    cursor: default;
+    &_showed{
+      display: block;
+    }
+    &_vertical{
+      top: -2px;
+      right: -10%;
+      transform: translate(100%, 0);
+    }
+    &_horizontal{
+      top: -21px;
+      transform: translate(-50%, 0);
+      left: 50%;
     }
   }
   &_horizontal{

@@ -3,23 +3,23 @@ export enum Orientation{
     Horizontal
 }
 
-export enum Type{
-    Single,
-    Range
-}
-
 export interface Options {
     min?: number,
     max?: number,
     step?: number,
-    showValue?: boolean,
+    tooltip?: boolean,
     orientation?: Orientation,
     values?: number[]
 }
 
 export interface SliderEvents {
     onMouseDown(e:MouseEvent):void,
-    onMouseUp():void,
+    onMouseUp(e:MouseEvent):void,
     onMouseMove(e:MouseEvent):void
-    onMouseLeave(e:Event):void
+    onMouseLeave(e:MouseEvent):void
+}
+
+export interface Handler {
+    handler: HTMLElement,
+    tooltip: HTMLElement
 }

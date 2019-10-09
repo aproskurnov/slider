@@ -7,7 +7,7 @@ class SliderController{
     private readonly _view: SliderView;
     constructor(node: HTMLElement, options: Options){
         this._model = new SliderModel(options);
-        this._view = new SliderView(options, this._model.steps, this._model.positions, node, {
+        this._view = new SliderView(options, this._model.values, this._model.positions, node, {
             onMouseMove: this.move.bind(this),
             onMouseDown: this.startMoving.bind(this),
             onMouseUp:this.endMoving.bind(this),
@@ -16,6 +16,7 @@ class SliderController{
     }
 
     private move(e:MouseEvent){
+        e.preventDefault();
         if (this._view.activeHandler !== null){
             let rect = this._view.getRect();
             if (this._view.orientation === Orientation.Horizontal){
@@ -23,15 +24,16 @@ class SliderController{
             }else if (this._view.orientation === Orientation.Vertical){
                 this._model.move(rect.top, rect.height, this._view.activeHandler, e.clientY);
             }
-
-            this._view.move(this._model.positions);
+            this._view.move(this._model.positions, this._model.values);
         }
     }
 
     private startMoving(e:MouseEvent){
-        this._view.activeHandler = Number((<HTMLElement>e.target).getAttribute('data-num-handle') || '0');
+        e.preventDefault();
+        this._view.setActiveHandler(<HTMLElement>e.target);
     }
-    private endMoving(){
+    private endMoving(e:MouseEvent){
+        e.preventDefault();
         this._view.activeHandler = null;
     }
 }
