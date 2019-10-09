@@ -167,4 +167,16 @@ describe('Slider Model tests', ()=>{
         });
     });
 
+    describe('added interface', ()=>{
+        it('set min < left handle, throw exception', ()=>{
+            let model = new SliderModel({min:0, max:9, values:[3]});
+            chai.expect(()=>{model.min = 4}).to.throw();
+        });
+
+        it('set max > right handle, throw exception', ()=>{
+            let model = new SliderModel({min:0, max:9, values:[3]});
+            chai.expect(()=>{model.max = 10}).to.throw();
+        });
+    });
+
 });
