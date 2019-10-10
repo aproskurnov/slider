@@ -1,7 +1,7 @@
 import {Orientation, SliderEvents, Handler} from "./interfaces";
 
 class SliderView{
-    private _tooltip:boolean;
+    private _label:boolean;
     private _orientation:Orientation;
     private _positions:number[];
     private _values: number[];
@@ -9,9 +9,9 @@ class SliderView{
     private _handlers:Handler[];
     private _activeHandler:number|null;
     private _sliderEvents: SliderEvents;
-    constructor({tooltip = false, orientation = Orientation.Horizontal},
+    constructor({label = false, orientation = Orientation.Horizontal},
                 values:number[], positions:number[], parentEl:HTMLElement, sliderEvents: SliderEvents){
-        this._tooltip = tooltip;
+        this._label = label;
         this._orientation = orientation;
         this._positions = positions;
         this._values = values;
@@ -28,12 +28,12 @@ class SliderView{
         if (this._orientation === Orientation.Horizontal){
             this._handlers.map((v, i)=>{
                 v.handler.style.left = positions[i] + '%';
-                v.tooltip.innerHTML = String(values[i]);
+                v.label.innerHTML = String(values[i]);
             });
         }else if (this._orientation === Orientation.Vertical){
             this._handlers.map((v, i)=>{
                 v.handler.style.top = positions[i] + '%';
-                v.tooltip.innerHTML = String(values[i]);
+                v.label.innerHTML = String(values[i]);
             });
         }
     }
@@ -57,26 +57,26 @@ class SliderView{
                 handler.classList.add('slider__handler_vertical');
             }
 
-            let tooltip = document.createElement('div');
-            tooltip.classList.add('slider__tooltip');
-            tooltip.innerHTML = String(this._values[i]);
+            let label = document.createElement('div');
+            label.classList.add('slider__label');
+            label.innerHTML = String(this._values[i]);
 
             if (this._orientation === Orientation.Horizontal){
-                tooltip.classList.add('slider__tooltip_horizontal');
+                label.classList.add('slider__label_horizontal');
             }else if (this._orientation === Orientation.Vertical){
-                tooltip.classList.add('slider__tooltip_vertical');
+                label.classList.add('slider__label_vertical');
             }
 
-            handler.appendChild(tooltip);
+            handler.appendChild(label);
 
-            if (this._tooltip){
-                tooltip.classList.add('slider__tooltip_showed');
+            if (this._label){
+                label.classList.add('slider__label_showed');
             }
 
             this._parentEl.appendChild(handler);
             this._handlers.push({
                 handler:handler,
-                tooltip:tooltip
+                label:label
             });
 
         });
@@ -119,22 +119,22 @@ class SliderView{
         });
     }
 
-    public get tooltip():boolean{
-        return this._tooltip;
+    public get label():boolean{
+        return this._label;
     }
 
-    public set tooltip(val:boolean){
-        if (this._tooltip !== val){
+    public set label(val:boolean){
+        if (this._label !== val){
             if (val){
                 this._handlers.map((v)=>{
-                    v.tooltip.classList.add('slider__tooltip_showed')
+                    v.label.classList.add('slider__label_showed')
                 });
             }else{
                 this._handlers.map((v)=>{
-                    v.tooltip.classList.remove('slider__tooltip_showed')
+                    v.label.classList.remove('slider__label_showed')
                 });
             }
-            this._tooltip = val;
+            this._label = val;
         }
     }
 

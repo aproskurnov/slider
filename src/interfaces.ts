@@ -7,7 +7,7 @@ export interface Options {
     min?: number,
     max?: number,
     step?: number,
-    tooltip?: boolean,
+    label?: boolean,
     orientation?: Orientation,
     values?: number[],
     callbacks?:Callbacks
@@ -22,7 +22,7 @@ export interface SliderEvents {
 
 export interface Handler {
     handler: HTMLElement,
-    tooltip: HTMLElement
+    label: HTMLElement
 }
 
 export interface Callbacks {

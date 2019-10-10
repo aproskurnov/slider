@@ -27,7 +27,7 @@ interface sliderInterface{
     val1:JQuery,
     val2?:JQuery,
     val3?:JQuery,
-    tooltip:JQuery,
+    label:JQuery,
     slider:JQuery
 }
 
@@ -36,10 +36,10 @@ try {
     let min = $('#min1');
     let max = $('#max1');
     let val1 = $('#value1_1');
-    let tooltip = $('#tooltip1');
+    let label = $('#label1');
 
     let slider = $('.slider1').slider({
-        min: -10000, max: 30000, values:[20000], step:1000, tooltip:true,
+        min: -10000, max: 30000, values:[20000], step:1000, label:true,
         callbacks:{onMove(val: number[]): void {
                 val1.val(val[0]);
             }}
@@ -50,7 +50,7 @@ try {
         min:min,
         max:max,
         val1:val1,
-        tooltip:tooltip
+        label:label
     });
 
 }
@@ -63,7 +63,7 @@ try {
     let min = $('#min2');
     let max = $('#max2');
     let val1 = $('#value2_1');
-    let tooltip = $('#tooltip2');
+    let label = $('#label2');
 
     let slider = $('.slider2').slider({
         min:4, max:14, values:[8],
@@ -77,7 +77,7 @@ try {
         min:min,
         max:max,
         val1:val1,
-        tooltip:tooltip
+        label:label
     });
 
 }
@@ -92,10 +92,10 @@ try {
     let val1 = $('#value3_1');
     let val2 = $('#value3_2');
     let val3 = $('#value3_3');
-    let tooltip = $('#tooltip3');
+    let label = $('#label3');
 
     let slider = $('.slider3').slider({
-        min:0, max:10, values:[2, 5, 6], tooltip:true,
+        min:0, max:10, values:[2, 5, 6], label:true,
         callbacks:{onMove(val: number[]): void {
                 val1.val(val[0]);
                 val2.val(val[1]);
@@ -110,7 +110,7 @@ try {
         val1:val1,
         val2:val2,
         val3:val3,
-        tooltip:tooltip
+        label:label
     });
 
 
@@ -125,10 +125,10 @@ try {
     let max = $('#max4');
     let val1 = $('#value4_1');
     let val2 = $('#value4_2');
-    let tooltip = $('#tooltip4');
+    let label = $('#label4');
 
     let slider = $('.slider4').slider({
-        min:-10, max: 5, values: [0, 3], orientation:Orientation.Vertical, tooltip:true,
+        min:-10, max: 5, values: [0, 3], orientation:Orientation.Vertical, label:true,
         callbacks:{onMove(val: number[]): void {
                 val1.val(val[0]);
                 val2.val(val[1]);
@@ -141,7 +141,7 @@ try {
         max:max,
         val1:val1,
         val2:val2,
-        tooltip:tooltip
+        label:label
     });
 
 }
@@ -153,7 +153,7 @@ function fillInterface(data:sliderInterface){
     data.min.val(data.slider.data('slider').min);
     data.max.val(data.slider.data('slider').max);
     data.val1.val(data.slider.data('slider').values[0]);
-    data.tooltip.prop('checked', (data.slider.data('slider').tooltip));
+    data.label.prop('checked', (data.slider.data('slider').label));
 
     data.min.on('blur', null, function(){
         let el = <HTMLInputElement>this;
@@ -216,8 +216,8 @@ function fillInterface(data:sliderInterface){
         data.val3.val(data.slider.data('slider').values[2]);
     }
 
-    data.tooltip.on('change', null, function(){
+    data.label.on('change', null, function(){
         let el = <HTMLInputElement>this;
-        data.slider.data('slider').tooltip = el.checked;
+        data.slider.data('slider').label = el.checked;
     });
 }

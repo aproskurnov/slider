@@ -66,12 +66,12 @@ class SliderController{
         this._view.move(this._model.positions,this._model.values);
     }
 
-    public get tooltip():boolean{
-        return this._view.tooltip;
+    public get label():boolean{
+        return this._view.label;
     }
 
-    public set tooltip(val:boolean){
-        this._view.tooltip = val;
+    public set label(val:boolean){
+        this._view.label = val;
     }
 
     public get values():number[]{

@@ -10785,12 +10785,12 @@ var SliderController = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(SliderController.prototype, "tooltip", {
+    Object.defineProperty(SliderController.prototype, "label", {
         get: function () {
-            return this._view.tooltip;
+            return this._view.label;
         },
         set: function (val) {
-            this._view.tooltip = val;
+            this._view.label = val;
         },
         enumerable: true,
         configurable: true
@@ -11031,8 +11031,8 @@ __webpack_require__.r(__webpack_exports__);
 
 var SliderView = /** @class */ (function () {
     function SliderView(_a, values, positions, parentEl, sliderEvents) {
-        var _b = _a.tooltip, tooltip = _b === void 0 ? false : _b, _c = _a.orientation, orientation = _c === void 0 ? _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Horizontal : _c;
-        this._tooltip = tooltip;
+        var _b = _a.label, label = _b === void 0 ? false : _b, _c = _a.orientation, orientation = _c === void 0 ? _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Horizontal : _c;
+        this._label = label;
         this._orientation = orientation;
         this._positions = positions;
         this._values = values;
@@ -11047,13 +11047,13 @@ var SliderView = /** @class */ (function () {
         if (this._orientation === _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Horizontal) {
             this._handlers.map(function (v, i) {
                 v.handler.style.left = positions[i] + '%';
-                v.tooltip.innerHTML = String(values[i]);
+                v.label.innerHTML = String(values[i]);
             });
         }
         else if (this._orientation === _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Vertical) {
             this._handlers.map(function (v, i) {
                 v.handler.style.top = positions[i] + '%';
-                v.tooltip.innerHTML = String(values[i]);
+                v.label.innerHTML = String(values[i]);
             });
         }
     };
@@ -11075,23 +11075,23 @@ var SliderView = /** @class */ (function () {
             else if (_this._orientation === _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Vertical) {
                 handler.classList.add('slider__handler_vertical');
             }
-            var tooltip = document.createElement('div');
-            tooltip.classList.add('slider__tooltip');
-            tooltip.innerHTML = String(_this._values[i]);
+            var label = document.createElement('div');
+            label.classList.add('slider__label');
+            label.innerHTML = String(_this._values[i]);
             if (_this._orientation === _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Horizontal) {
-                tooltip.classList.add('slider__tooltip_horizontal');
+                label.classList.add('slider__label_horizontal');
             }
             else if (_this._orientation === _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Vertical) {
-                tooltip.classList.add('slider__tooltip_vertical');
+                label.classList.add('slider__label_vertical');
             }
-            handler.appendChild(tooltip);
-            if (_this._tooltip) {
-                tooltip.classList.add('slider__tooltip_showed');
+            handler.appendChild(label);
+            if (_this._label) {
+                label.classList.add('slider__label_showed');
             }
             _this._parentEl.appendChild(handler);
             _this._handlers.push({
                 handler: handler,
-                tooltip: tooltip
+                label: label
             });
         });
         this.move(this._positions, this._values);
@@ -11133,23 +11133,23 @@ var SliderView = /** @class */ (function () {
             }
         });
     };
-    Object.defineProperty(SliderView.prototype, "tooltip", {
+    Object.defineProperty(SliderView.prototype, "label", {
         get: function () {
-            return this._tooltip;
+            return this._label;
         },
         set: function (val) {
-            if (this._tooltip !== val) {
+            if (this._label !== val) {
                 if (val) {
                     this._handlers.map(function (v) {
-                        v.tooltip.classList.add('slider__tooltip_showed');
+                        v.label.classList.add('slider__label_showed');
                     });
                 }
                 else {
                     this._handlers.map(function (v) {
-                        v.tooltip.classList.remove('slider__tooltip_showed');
+                        v.label.classList.remove('slider__label_showed');
                     });
                 }
-                this._tooltip = val;
+                this._label = val;
             }
         },
         enumerable: true,
@@ -11224,9 +11224,9 @@ try {
     var min = $('#min1');
     var max = $('#max1');
     var val1_1 = $('#value1_1');
-    var tooltip = $('#tooltip1');
+    var label = $('#label1');
     var slider = $('.slider1').slider({
-        min: -10000, max: 30000, values: [20000], step: 1000, tooltip: true,
+        min: -10000, max: 30000, values: [20000], step: 1000, label: true,
         callbacks: { onMove: function (val) {
                 val1_1.val(val[0]);
             } }
@@ -11236,7 +11236,7 @@ try {
         min: min,
         max: max,
         val1: val1_1,
-        tooltip: tooltip
+        label: label
     });
 }
 catch (e) {
@@ -11246,7 +11246,7 @@ try {
     var min = $('#min2');
     var max = $('#max2');
     var val1_2 = $('#value2_1');
-    var tooltip = $('#tooltip2');
+    var label = $('#label2');
     var slider = $('.slider2').slider({
         min: 4, max: 14, values: [8],
         callbacks: { onMove: function (val) {
@@ -11258,7 +11258,7 @@ try {
         min: min,
         max: max,
         val1: val1_2,
-        tooltip: tooltip
+        label: label
     });
 }
 catch (e) {
@@ -11270,9 +11270,9 @@ try {
     var val1_3 = $('#value3_1');
     var val2_1 = $('#value3_2');
     var val3_1 = $('#value3_3');
-    var tooltip = $('#tooltip3');
+    var label = $('#label3');
     var slider = $('.slider3').slider({
-        min: 0, max: 10, values: [2, 5, 6], tooltip: true,
+        min: 0, max: 10, values: [2, 5, 6], label: true,
         callbacks: { onMove: function (val) {
                 val1_3.val(val[0]);
                 val2_1.val(val[1]);
@@ -11286,7 +11286,7 @@ try {
         val1: val1_3,
         val2: val2_1,
         val3: val3_1,
-        tooltip: tooltip
+        label: label
     });
 }
 catch (e) {
@@ -11297,9 +11297,9 @@ try {
     var max = $('#max4');
     var val1_4 = $('#value4_1');
     var val2_2 = $('#value4_2');
-    var tooltip = $('#tooltip4');
+    var label = $('#label4');
     var slider = $('.slider4').slider({
-        min: -10, max: 5, values: [0, 3], orientation: _interfaces__WEBPACK_IMPORTED_MODULE_2__["Orientation"].Vertical, tooltip: true,
+        min: -10, max: 5, values: [0, 3], orientation: _interfaces__WEBPACK_IMPORTED_MODULE_2__["Orientation"].Vertical, label: true,
         callbacks: { onMove: function (val) {
                 val1_4.val(val[0]);
                 val2_2.val(val[1]);
@@ -11311,7 +11311,7 @@ try {
         max: max,
         val1: val1_4,
         val2: val2_2,
-        tooltip: tooltip
+        label: label
     });
 }
 catch (e) {
@@ -11321,7 +11321,7 @@ function fillInterface(data) {
     data.min.val(data.slider.data('slider').min);
     data.max.val(data.slider.data('slider').max);
     data.val1.val(data.slider.data('slider').values[0]);
-    data.tooltip.prop('checked', (data.slider.data('slider').tooltip));
+    data.label.prop('checked', (data.slider.data('slider').label));
     data.min.on('blur', null, function () {
         var el = this;
         try {
@@ -11378,9 +11378,9 @@ function fillInterface(data) {
         });
         data.val3.val(data.slider.data('slider').values[2]);
     }
-    data.tooltip.on('change', null, function () {
+    data.label.on('change', null, function () {
         var el = this;
-        data.slider.data('slider').tooltip = el.checked;
+        data.slider.data('slider').label = el.checked;
     });
 }
 
