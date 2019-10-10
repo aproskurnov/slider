@@ -10878,9 +10878,6 @@ var SliderModel = /** @class */ (function () {
                 });
             }
             if (changeMoreThanOne) {
-                if (val.length > 2) {
-                    throw "count values must be less or equal 2";
-                }
                 val.reduce(function (left, current) {
                     if (left >= current) {
                         throw "left must be less than right";
@@ -11272,9 +11269,10 @@ try {
     var max = $('#max3');
     var val1_3 = $('#value3_1');
     var val2_1 = $('#value3_2');
+    var val3 = $('#value3_3');
     var tooltip = $('#tooltip3');
     var slider = $('.slider3').slider({
-        min: 0, max: 10, values: [2, 5], tooltip: true,
+        min: 0, max: 10, values: [2, 5, 6], tooltip: true,
         callbacks: { onMove: function (val) {
                 val1_3.val(val[0]);
                 val2_1.val(val[1]);
@@ -11286,6 +11284,7 @@ try {
         max: max,
         val1: val1_3,
         val2: val2_1,
+        val3: val3,
         tooltip: tooltip
     });
 }
@@ -11364,6 +11363,19 @@ function fillInterface(data) {
             el.value = (data.slider.data('slider').values[1]);
         });
         data.val2.val(data.slider.data('slider').values[1]);
+    }
+    if (data.val3) {
+        data.val3.on('blur', null, function () {
+            var el = this;
+            try {
+                data.slider.data('slider').setValue(Number(el.value), 2);
+            }
+            catch (e) {
+                alert("error: " + e);
+            }
+            el.value = (data.slider.data('slider').values[2]);
+        });
+        data.val3.val(data.slider.data('slider').values[2]);
     }
     data.tooltip.on('change', null, function () {
         var el = this;

@@ -62,10 +62,6 @@ class SliderModel{
         }
 
         if (changeMoreThanOne){
-            if (val.length > 2){
-                throw "count values must be less or equal 2";
-            }
-
             val.reduce((left, current)=>{
                 if (left >= current){
                     throw "left must be less than right";

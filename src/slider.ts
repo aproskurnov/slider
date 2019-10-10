@@ -26,6 +26,7 @@ interface sliderInterface{
     max:JQuery,
     val1:JQuery,
     val2?:JQuery,
+    val3?:JQuery,
     tooltip:JQuery,
     slider:JQuery
 }
@@ -90,10 +91,11 @@ try {
     let max = $('#max3');
     let val1 = $('#value3_1');
     let val2 = $('#value3_2');
+    let val3 = $('#value3_3');
     let tooltip = $('#tooltip3');
 
     let slider = $('.slider3').slider({
-        min:0, max:10, values:[2, 5], tooltip:true,
+        min:0, max:10, values:[2, 5, 6], tooltip:true,
         callbacks:{onMove(val: number[]): void {
                 val1.val(val[0]);
                 val2.val(val[1]);
@@ -106,6 +108,7 @@ try {
         max:max,
         val1:val1,
         val2:val2,
+        val3:val3,
         tooltip:tooltip
     });
 
@@ -196,6 +199,20 @@ function fillInterface(data:sliderInterface){
             el.value = (data.slider.data('slider').values[1]);
         });
         data.val2.val(data.slider.data('slider').values[1]);
+    }
+
+    if (data.val3){
+        data.val3.on('blur', null, function(){
+            let el = <HTMLInputElement>this;
+            try{
+                data.slider.data('slider').setValue(Number(el.value), 2)
+            }
+            catch (e) {
+                alert("error: " + e);
+            }
+            el.value = (data.slider.data('slider').values[2]);
+        });
+        data.val3.val(data.slider.data('slider').values[2]);
     }
 
     data.tooltip.on('change', null, function(){
