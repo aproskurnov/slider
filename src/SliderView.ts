@@ -37,7 +37,7 @@ class SliderView{
             });
         }
     }
-    public create(){
+    private create(){
         this._parentEl.classList.add('slider');
 
         if (this._orientation === Orientation.Horizontal){
@@ -84,7 +84,7 @@ class SliderView{
 
 
     }
-    public bindEvents()
+    private bindEvents()
     {
         this._handlers.map((v)=>{
             v.handler.addEventListener('mousedown', this._sliderEvents.onMouseDown);
