@@ -99,6 +99,7 @@ try {
         callbacks:{onMove(val: number[]): void {
                 val1.val(val[0]);
                 val2.val(val[1]);
+                val3.val(val[2]);
             }}
     });
 

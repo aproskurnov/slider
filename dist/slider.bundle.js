@@ -11269,13 +11269,14 @@ try {
     var max = $('#max3');
     var val1_3 = $('#value3_1');
     var val2_1 = $('#value3_2');
-    var val3 = $('#value3_3');
+    var val3_1 = $('#value3_3');
     var tooltip = $('#tooltip3');
     var slider = $('.slider3').slider({
         min: 0, max: 10, values: [2, 5, 6], tooltip: true,
         callbacks: { onMove: function (val) {
                 val1_3.val(val[0]);
                 val2_1.val(val[1]);
+                val3_1.val(val[2]);
             } }
     });
     fillInterface({
@@ -11284,7 +11285,7 @@ try {
         max: max,
         val1: val1_3,
         val2: val2_1,
-        val3: val3,
+        val3: val3_1,
         tooltip: tooltip
     });
 }
