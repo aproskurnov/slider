@@ -1,41 +1,45 @@
 # Slider
-### Демо
-Посмотреть работу слайдера можно <a href="http://slider.vxoxv.ru">тут</a>
+### Demo
+You can find a demo of the slider on <a href="http://slider.vxoxv.ru">this page</a>
 
-### Описание
-Cлайдер построенный по классической архитектуре MVC.<br>
-Вся бизнес логика находится в SliderModel, за отрисовку отвечает SliderView, 
-а взаимодействие с этими классами происходит через внешний интерфейс SliderController'а.<br>
-Инициализация слайдера происходит через создание объекта SliderController и передачей ему 
-начальных параметров.
-### Возможные параметры при инициализации
-| Переменная | Описание |
+### Description
+
+The Slider is build as a classical MVC application. SliderModel contains business logic, 
+SliderView displays data and SliderController handles user requests. Just create a new 
+SliderController and pass initial parameters to the constructor.
+
+### Options
+| Variable | Description |
 | --- | --- |
-|min| Минимальное значение|
-|max| Максимальное значение|
-|step| Длина шага|
-|tooltip| Показывать ли тултип|
-|orientation| Вертикальная или горизонтальная ориентация|
-|values| Начальные значения бегунков|
-|callbacks| Коллбэки|
+|min| Minimal value of range|
+|max| Maximal value of range|
+|step| Step size|
+|label| Label visibility|
+|orientation| Vertical or horizontal orientation|
+|values| Initial values of handles|
+|callbacks| Callbacks|
 
-### Коллбэки
-| Коллбэк | Описание |
+### Callbacks
+| Callback | Description |
 | --- | --- |
-|onMove(values:number[])| Вызывается после перемещения бегунка, в values передается новые значения бегунков |
+|onMove(values:number[])| Invoke after handler is moved passing new handle values |
 
 
-### Методы SliderController
-| Метод | Описание | Тип |
+### SliderControllers methods
+| Method | Description | Type |
 | --- | --- | --- |
-| getter/setter max | Максимальное значение слайдера | Number |
-| getter/setter min | Mинимальное значение слайдера | Number |
-| getter/setter tooltip | Выводить ли тултип  | Boolean |
-| getter value | Значения бегунков | Number[] |
+| getter/setter max | Maximal value of range | Number |
+| getter/setter min | Minimal value of range | Number |
+| getter/setter label | Show label  | Boolean |
+| getter value | Values of handlers | Number[] |
 
-### Пример использования
-В файле slider.ts находится пример использования данного слайдера для написания jquery плагина и 
-дальнейшего использовании его для встраивания в веб-страницу. 
+### Examples
+The snipped below adds the slider on a page:
+```javascript
+let slider = new SliderController(document.querySelector('#slider'), {min: 0, max: 9});
+```
+See also slider.ts for a sample jQuery plugin implementation wrapping the slider
 
-### UML диаграмма
+
+### UML diagram
 ![Diagram](http://slider.vxoxv.ru/slider-diagram.png)
