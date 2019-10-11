@@ -42,4 +42,4 @@ See also slider.ts for a sample jQuery plugin implementation wrapping the slider
 
 
 ### UML diagram
-![Diagram](http://slider.vxoxv.ru/slider-diagram.png)
+![Diagram](uml/slider-diagram.png)
