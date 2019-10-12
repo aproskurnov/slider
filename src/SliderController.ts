@@ -22,14 +22,29 @@ class SliderController{
 
     }
 
-    private move(e:MouseEvent){
-        e.preventDefault();
+    private move(e:MouseEvent|TouchEvent){
+
         if (this._view.activeHandler !== null){
+
+            let x:number;
+            let y:number;
+
+            if (e instanceof MouseEvent){
+                e.preventDefault();
+                x = e.clientX;
+                y = e.clientY;
+            }else if(e instanceof TouchEvent){
+                x = e.touches[0].clientX;
+                y = e.touches[0].clientY;
+            }else{
+                throw "never use";
+            }
+
             let rect = this._view.getRect();
             if (this._view.orientation === Orientation.Horizontal){
-                this._model.move(rect.left, rect.width, this._view.activeHandler, e.clientX);
+                this._model.move(rect.left, rect.width, this._view.activeHandler, x);
             }else if (this._view.orientation === Orientation.Vertical){
-                this._model.move(rect.top, rect.height, this._view.activeHandler, e.clientY);
+                this._model.move(rect.top, rect.height, this._view.activeHandler, y);
             }
             this._view.move(this._model.positions, this._model.values);
             if (this._callbacks.onMove){
@@ -39,12 +54,17 @@ class SliderController{
         }
     }
 
-    private startMoving(e:MouseEvent){
-        e.preventDefault();
+    private startMoving(e:MouseEvent|TouchEvent){
+        if(e instanceof MouseEvent){
+            e.preventDefault();
+        }
+
         this._view.setActiveHandler(<HTMLElement>e.target);
     }
-    private endMoving(e:MouseEvent){
-        e.preventDefault();
+    private endMoving(e:MouseEvent|TouchEvent){
+        if(e instanceof MouseEvent){
+            e.preventDefault();
+        }
         this._view.activeHandler = null;
     }
 

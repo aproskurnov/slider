@@ -10740,14 +10740,27 @@ var SliderController = /** @class */ (function () {
         }
     }
     SliderController.prototype.move = function (e) {
-        e.preventDefault();
         if (this._view.activeHandler !== null) {
+            var x = void 0;
+            var y = void 0;
+            if (e instanceof MouseEvent) {
+                e.preventDefault();
+                x = e.clientX;
+                y = e.clientY;
+            }
+            else if (e instanceof TouchEvent) {
+                x = e.touches[0].clientX;
+                y = e.touches[0].clientY;
+            }
+            else {
+                throw "never use";
+            }
             var rect = this._view.getRect();
             if (this._view.orientation === _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Horizontal) {
-                this._model.move(rect.left, rect.width, this._view.activeHandler, e.clientX);
+                this._model.move(rect.left, rect.width, this._view.activeHandler, x);
             }
             else if (this._view.orientation === _interfaces__WEBPACK_IMPORTED_MODULE_0__["Orientation"].Vertical) {
-                this._model.move(rect.top, rect.height, this._view.activeHandler, e.clientY);
+                this._model.move(rect.top, rect.height, this._view.activeHandler, y);
             }
             this._view.move(this._model.positions, this._model.values);
             if (this._callbacks.onMove) {
@@ -10756,11 +10769,15 @@ var SliderController = /** @class */ (function () {
         }
     };
     SliderController.prototype.startMoving = function (e) {
-        e.preventDefault();
+        if (e instanceof MouseEvent) {
+            e.preventDefault();
+        }
         this._view.setActiveHandler(e.target);
     };
     SliderController.prototype.endMoving = function (e) {
-        e.preventDefault();
+        if (e instanceof MouseEvent) {
+            e.preventDefault();
+        }
         this._view.activeHandler = null;
     };
     Object.defineProperty(SliderController.prototype, "min", {
@@ -11100,10 +11117,13 @@ var SliderView = /** @class */ (function () {
         var _this = this;
         this._handlers.map(function (v) {
             v.handler.addEventListener('mousedown', _this._sliderEvents.onMouseDown);
+            v.handler.addEventListener('touchstart', _this._sliderEvents.onMouseDown);
         });
         document.addEventListener('mouseup', this._sliderEvents.onMouseUp);
         document.addEventListener('mouseleave', this._sliderEvents.onMouseLeave);
         document.addEventListener('mousemove', this._sliderEvents.onMouseMove);
+        document.addEventListener('touchend', this._sliderEvents.onMouseUp);
+        document.addEventListener('touchmove', this._sliderEvents.onMouseMove);
     };
     SliderView.prototype.getRect = function () {
         return this._parentEl.getBoundingClientRect();

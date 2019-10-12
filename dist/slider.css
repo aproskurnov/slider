@@ -14,19 +14,19 @@
     .slider__handler_vertical {
       left: -5px;
       transform: translate(0px, -10px); }
-  .slider__tooltip {
+  .slider__label {
     position: absolute;
     display: none;
     padding: 1px 8px;
     border: 1px solid;
     cursor: default; }
-    .slider__tooltip_showed {
+    .slider__label_showed {
       display: block; }
-    .slider__tooltip_vertical {
+    .slider__label_vertical {
       top: -2px;
       right: -10%;
       transform: translate(100%, 0); }
-    .slider__tooltip_horizontal {
+    .slider__label_horizontal {
       top: -21px;
       transform: translate(-50%, 0);
       left: 50%; }

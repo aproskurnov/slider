@@ -14,10 +14,10 @@ export interface Options {
 }
 
 export interface SliderEvents {
-    onMouseDown(e:MouseEvent):void,
-    onMouseUp(e:MouseEvent):void,
-    onMouseMove(e:MouseEvent):void
-    onMouseLeave(e:MouseEvent):void
+    onMouseDown(e:MouseEvent|TouchEvent):void,
+    onMouseUp(e:MouseEvent|TouchEvent):void,
+    onMouseMove(e:MouseEvent|TouchEvent):void
+    onMouseLeave(e:MouseEvent|TouchEvent):void
 }
 
 export interface Handler {

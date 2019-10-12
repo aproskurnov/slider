@@ -88,10 +88,13 @@ class SliderView{
     {
         this._handlers.map((v)=>{
             v.handler.addEventListener('mousedown', this._sliderEvents.onMouseDown);
+            v.handler.addEventListener('touchstart', this._sliderEvents.onMouseDown);
         });
         document.addEventListener('mouseup', this._sliderEvents.onMouseUp);
         document.addEventListener('mouseleave', this._sliderEvents.onMouseLeave);
         document.addEventListener('mousemove', this._sliderEvents.onMouseMove);
+        document.addEventListener('touchend', this._sliderEvents.onMouseUp);
+        document.addEventListener('touchmove', this._sliderEvents.onMouseMove);
     }
     public getRect():ClientRect
     {
